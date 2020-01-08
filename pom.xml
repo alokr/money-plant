@@ -9,5 +9,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-
+    <modules>
+        <module>money-plant-core</module>
+        <module>orange-plant</module>
+    </modules>
 </project>

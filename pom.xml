@@ -9,6 +9,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- java dependencies -->
+            <!-- spring dependencies -->
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>money-plant-core</module>
         <module>orange-plant</module>

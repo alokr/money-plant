@@ -5,12 +5,12 @@ import com.zerodhatech.models.User;
 import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 public class SessionResponseTO extends SessionResponseCoreTO {
-    private KiteConnect kiteConnect;
-    private User user;
+    private static final long serialVersionUID = 4489356047088770010L;
+
+    transient private KiteConnect kiteConnect;
+    transient private User user;
 
     public KiteConnect getKiteConnect() {
         return kiteConnect;
@@ -28,15 +28,27 @@ public class SessionResponseTO extends SessionResponseCoreTO {
         this.user = user;
     }
 
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(this);
-        out.writeObject(kiteConnect);
-        out.writeObject(user);
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        // kiteConnect
+        out.writeUTF(kiteConnect.getApiKey());
+        out.writeUTF(kiteConnect.getPublicToken());
+        out.writeUTF(kiteConnect.getAccessToken());
+        // user
+        out.writeUTF(user.refreshToken);
     }
 
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        in.readObject();
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        // kiteConnect
+        KiteConnect kiteConnect = new KiteConnect(in.readUTF());
+        kiteConnect.setPublicToken(in.readUTF());
+        kiteConnect.setAccessToken(in.readUTF());
+        this.setKiteConnect(kiteConnect);
+        // user
+        User user = new User();
+        // TODO refreshToken is blank
+        user.refreshToken = in.readUTF();
+        this.setUser(user);
     }
 }

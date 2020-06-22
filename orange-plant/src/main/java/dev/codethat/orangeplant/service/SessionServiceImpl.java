@@ -1,5 +1,6 @@
 package dev.codethat.orangeplant.service;
 
+import dev.codethat.moneyplant.core.adapter.SessionAdapter;
 import dev.codethat.moneyplant.core.service.SessionService;
 import dev.codethat.orangeplant.adapter.SessionAdapterImpl;
 import dev.codethat.orangeplant.to.request.SessionRequestTO;
@@ -10,16 +11,16 @@ import javax.inject.Inject;
 
 @Service
 public class SessionServiceImpl implements SessionService<SessionRequestTO, SessionResponseTO> {
-    private SessionAdapterImpl sessionAdapter;
+    private SessionAdapter<SessionRequestTO, SessionResponseTO> adapter;
 
     @Inject
-    public SessionServiceImpl(SessionAdapterImpl sessionAdapter) {
-        this.sessionAdapter = sessionAdapter;
+    public SessionServiceImpl(SessionAdapterImpl adapter) {
+        this.adapter = adapter;
     }
 
     @Override
-    public SessionResponseTO login(SessionRequestTO sessionRequestTO) {
-        SessionResponseTO sessionResponseTO = sessionAdapter.login(sessionRequestTO);
+    public SessionResponseTO login(SessionRequestTO sessionRequestTO) throws Exception {
+        SessionResponseTO sessionResponseTO = adapter.login(sessionRequestTO);
         return sessionResponseTO;
     }
 

@@ -1,13 +1,16 @@
 package dev.codethat.moneyplant.core.adapter;
 
-public interface OrderAdapter<T> {
-    Object place();
+import dev.codethat.moneyplant.core.to.request.OrderRequestCoreTO;
+import dev.codethat.moneyplant.core.to.response.OrderResponseCoreTO;
 
-    Object replace();
+public interface OrderAdapter<RequestTO extends OrderRequestCoreTO, ResponseTO extends OrderResponseCoreTO> {
+    ResponseTO place(RequestTO requestTO);
 
-    Object order();
+    ResponseTO replace(RequestTO requestTO);
 
-    Object cancel();
+    ResponseTO order(RequestTO requestTO);
 
-    Object orders();
+    ResponseTO cancel(RequestTO requestTO);
+
+    ResponseTO orders(RequestTO requestTO);
 }

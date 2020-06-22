@@ -1,0 +1,12 @@
+orange-plant:
+  kite-connect:
+    api:
+      key: yls7q6s0ddixuc99
+      version: 3
+      secret: fg72na1di168g8h1nmk0n1khb1cwqfty
+    query-params:
+      api-key: api_key
+      version: v
+    user-id: rb2977
+    logging-enabled: true
+    login-url: https://kite.trade/connect/login?v={v}&api_key={api_key}

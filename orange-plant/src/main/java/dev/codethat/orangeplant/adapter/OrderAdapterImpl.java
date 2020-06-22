@@ -17,11 +17,11 @@ import java.util.Objects;
 
 @Named
 @Slf4j
-public class SessionAdapterImpl implements SessionAdapter<SessionRequestTO, SessionResponseTO> {
+public class OrderAdapterImpl implements SessionAdapter<SessionRequestTO, SessionResponseTO> {
     private final OrangePlantApplicationProperties applicationProperties;
 
     @Inject
-    public SessionAdapterImpl(OrangePlantApplicationProperties applicationProperties, MoneyPlantCoreHttpClient moneyPlantCoreHttpClient) {
+    public OrderAdapterImpl(OrangePlantApplicationProperties applicationProperties, MoneyPlantCoreHttpClient moneyPlantCoreHttpClient) {
         this.applicationProperties = applicationProperties;
     }
 
@@ -36,11 +36,10 @@ public class SessionAdapterImpl implements SessionAdapter<SessionRequestTO, Sess
         }
         // TODO refactor
         kiteConnect.setSessionExpiryHook(() -> {
-            log.warn("Session Expired");
+            System.out.println("Session Expired");
         });
         try {
-            User user = kiteConnect.generateSession(sessionRequestTO.getRequestToken()
-                    , applicationProperties.getKiteConnect().getApi().getSecret());
+            User user = kiteConnect.generateSession(sessionRequestTO.getRequestToken(), applicationProperties.getKiteConnect().getApi().getSecret());
             if (!Objects.isNull(user)) {
                 kiteConnect.setAccessToken(user.accessToken);
                 kiteConnect.setPublicToken(user.publicToken);
@@ -50,7 +49,7 @@ public class SessionAdapterImpl implements SessionAdapter<SessionRequestTO, Sess
                 responseTO.setUser(user);
             }
         } catch (KiteException | IOException e) {
-            log.error("Exception occurred. Message={}", e.getMessage());
+            log.error(e.getMessage());
             throw new Exception();
         }
         return responseTO;

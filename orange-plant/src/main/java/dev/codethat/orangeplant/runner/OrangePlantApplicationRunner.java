@@ -1,51 +1,42 @@
 package dev.codethat.orangeplant.runner;
 
-import com.zerodhatech.kiteconnect.KiteConnect;
 import dev.codethat.moneyplant.core.runner.MoneyPlantCoreApplicationRunner;
-import dev.codethat.orangeplant.service.SessionServiceImpl;
-import dev.codethat.orangeplant.to.request.SessionRequestTO;
-import dev.codethat.orangeplant.to.response.SessionResponseTO;
-import org.springframework.boot.ApplicationArguments;
+import dev.codethat.orangeplant.boot.Bootstrap;
+import dev.codethat.orangeplant.constants.OrangePlantConstants;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.*;
-import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 @Named
+@Slf4j
 public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunner {
-    private final SessionServiceImpl sessionService;
+    private final Bootstrap bootstrap;
 
     @Inject
-    public OrangePlantApplicationRunner(SessionServiceImpl sessionService) {
-        this.sessionService = sessionService;
+    public OrangePlantApplicationRunner(final Bootstrap bootstrap) {
+        this.bootstrap = bootstrap;
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        Optional<String> requestToken = args.getNonOptionArgs().stream().findFirst();
-        if (!requestToken.isPresent()) {
-            throw new IllegalArgumentException("request token is missing!");
-        }
-
-        SessionRequestTO sessionRequestTO = new SessionRequestTO();
-        sessionRequestTO.setRequestToken(requestToken.get());
-
-        SessionResponseTO sessionResponseTO = null;
-
-        File file = new File("sessionResponseTO.ser");
-        if (file.exists()) {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("sessionResponseTO.ser")));
-            sessionResponseTO = (SessionResponseTO) ois.readObject();
-        }
-
-        if (sessionResponseTO == null) {
-            sessionResponseTO = sessionService.login(sessionRequestTO);
-            if (sessionResponseTO != null) {
-                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("sessionResponseTO.ser")));
-                oos.writeObject(sessionResponseTO);
+    public void run(String... args) throws Exception {
+        log.info("Logged in...");
+        try(final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))){
+            if (bootstrap.login(bufferedReader)) {
+                log.info("Retrieving margin...");
+                if (bootstrap.margin(OrangePlantConstants.MARGIN_SEGMENT)) {
+                    log.info("Retrieving instruments...");
+                    log.info("Enter exchange");
+                    if (bootstrap.instruments("NFO")) {
+                        log.info("Retrieving quotes...");
+                        log.info("Enter instruments");
+                        log.info("Subscribing ticks...");
+                    }
+                }
             } else {
-                throw new Exception();
+                log.error("Login failed");
             }
         }
     }

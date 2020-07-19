@@ -1,16 +1,14 @@
 package dev.codethat.moneyplant.core.adapter;
 
-import dev.codethat.moneyplant.core.to.request.AccountRequestCoreTO;
 import dev.codethat.moneyplant.core.to.request.QuoteRequestCoreTO;
-import dev.codethat.moneyplant.core.to.response.AccountResponseCoreTO;
 import dev.codethat.moneyplant.core.to.response.QuoteResponseCoreTO;
 
-public interface QuoteAdapter<RequestTO extends QuoteRequestCoreTO, ResponseTO extends QuoteResponseCoreTO> {
-    ResponseTO instruments(RequestTO requestTO) throws Exception;
+public interface QuoteAdapter<RequestT extends QuoteRequestCoreTO, ResponseT extends QuoteResponseCoreTO> {
+    ResponseT instruments(RequestT requestTO) throws Exception;
 
-    ResponseTO quote(RequestTO requestTO) throws Exception;
+    ResponseT quote(RequestT requestTO) throws Exception;
 
-    ResponseTO ohlc(RequestTO requestTO) throws Exception;
+    ResponseT ohlc(RequestT requestTO) throws Exception;
 
-    ResponseTO ltp(RequestTO requestTO) throws Exception;
+    ResponseT ltp(RequestT requestTO) throws Exception;
 }

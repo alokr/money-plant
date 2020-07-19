@@ -22,7 +22,7 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("Logged in...");
+        log.info("Logging in...");
         try(final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))){
             if (bootstrap.login(bufferedReader)) {
                 log.info("Retrieving margin...");

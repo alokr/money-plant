@@ -3,10 +3,10 @@ package dev.codethat.moneyplant.core.service;
 import dev.codethat.moneyplant.core.to.request.SessionRequestCoreTO;
 import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
 
-public interface SessionService<RequestTO extends SessionRequestCoreTO, ResponseTO extends SessionResponseCoreTO> {
-    ResponseTO login(RequestTO requestTO) throws Exception;
+public interface SessionService<RequestT extends SessionRequestCoreTO, ResponseT extends SessionResponseCoreTO> {
+    ResponseT login(RequestT requestTO) throws Exception;
 
-    ResponseTO refresh(RequestTO requestTO);
+    ResponseT refresh(RequestT requestTO);
 
-    ResponseTO logout(RequestTO requestTO);
+    ResponseT logout(RequestT requestTO);
 }

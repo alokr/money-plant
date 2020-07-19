@@ -1,10 +1,12 @@
 package dev.codethat.orangeplant.boot;
 
+import com.zerodhatech.models.Instrument;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.moneyplant.core.service.AccountService;
 import dev.codethat.moneyplant.core.service.QuoteService;
 import dev.codethat.orangeplant.service.SessionServiceImpl;
+import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
 import dev.codethat.orangeplant.to.request.AccountRequestTO;
 import dev.codethat.orangeplant.to.request.QuoteRequestTO;
 import dev.codethat.orangeplant.to.request.SessionRequestTO;
@@ -16,15 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Named;
 import java.io.*;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Named
 @Slf4j
 @AllArgsConstructor
 public class Bootstrap implements BootstrapCore {
     private final static String SESSION_RESPONSE_TO_SER = "data/session/sessionResponseTO.ser";
+
+    private final OrangePlantApplicationProperties properties;
 
     private final MoneyPlantCache moneyPlantCache;
 
@@ -36,9 +41,7 @@ public class Bootstrap implements BootstrapCore {
 
     @Override
     public boolean login(final BufferedReader reader) throws Exception {
-        log.info("Logging in...");
         SessionResponseTO sessionResponseTO = null;
-
         File file = new File(SESSION_RESPONSE_TO_SER);
         if (file.exists()) {
             log.info("Retrieving session");
@@ -66,6 +69,7 @@ public class Bootstrap implements BootstrapCore {
         moneyPlantCache.CACHE.put(MoneyPlantCache.BROKER_CLIENT_SESSION_KEY, sessionResponseTO.getKiteConnect());
         moneyPlantCache.CACHE.put(MoneyPlantCache.USER_SESSION_KEY, sessionResponseTO.getUser());
         log.info("Cached session");
+        log.info("Logged in");
         return true;
     }
 
@@ -78,7 +82,7 @@ public class Bootstrap implements BootstrapCore {
         log.info("Net={}", accountResponseTO.getMargin().net);
         log.info("Cash={}", accountResponseTO.getMargin().available.cash);
         log.info("OptionPremium={}", accountResponseTO.getMargin().utilised.optionPremium);
-        log.info("Margin retrieved");
+        log.info("Retrieved margin");
         return true;
     }
 
@@ -87,16 +91,8 @@ public class Bootstrap implements BootstrapCore {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
         quoteRequestTO.setExchange(exchange);
         QuoteResponseTO quoteResponseTO = (QuoteResponseTO) quoteService.instruments(quoteRequestTO);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2020, Calendar.JUNE, 27);
-        quoteResponseTO.getInstruments().stream().filter(instrument
-                -> instrument.tradingsymbol.startsWith("BANKNIFTY")
-                && (instrument.segment.equals("NFO-OPT"))
-                && instrument.expiry.getTime() < calendar.getTimeInMillis()
-        ).forEach(instrument -> {
-            log.info(instrument.toString());
-        });
-        log.info("Instruments retrieved");
+        log.info("Retrieved instruments");
+        extractTradingInstruments(quoteResponseTO.getInstruments());
         return true;
     }
 
@@ -113,5 +109,26 @@ public class Bootstrap implements BootstrapCore {
     @Override
     public boolean trade() {
         return false;
+    }
+
+    private void extractTradingInstruments(List<Instrument> instruments) {
+        // TODO stocks
+        Map<String, List<Instrument>> tradingInstruments = instruments.stream().filter(instrument
+                -> instrument.exchange.equals(properties.getTradePreference().getExchange())
+                && properties.getTradePreference().getSegments().contains(instrument.segment)
+                && instrument.name.equals(properties.getTradePreference().getInstrument())
+                && instrument.expiry.getTime() >= properties.getTradePreference().getExpiryStartDate().getTime()
+                && instrument.expiry.getTime() <= properties.getTradePreference().getExpiryEndDate().getTime()
+        ).collect(Collectors.groupingBy(Instrument::getSegment));
+        moneyPlantCache.CACHE
+                .put(MoneyPlantCache.TRADING_STOCKS
+                        , tradingInstruments.get(properties.getTradePreference().getSegments().get(0)));
+        moneyPlantCache.CACHE
+                .put(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS
+                        , tradingInstruments.get(properties.getTradePreference().getSegments().get(1)));
+        moneyPlantCache.CACHE
+                .put(MoneyPlantCache.TRADING_OPTION_INSTRUMENTS
+                        , tradingInstruments.get(properties.getTradePreference().getSegments().get(2)));
+        log.info("Extracted trading instruments");
     }
 }

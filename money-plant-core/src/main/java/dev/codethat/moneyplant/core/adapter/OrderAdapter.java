@@ -3,14 +3,14 @@ package dev.codethat.moneyplant.core.adapter;
 import dev.codethat.moneyplant.core.to.request.OrderRequestCoreTO;
 import dev.codethat.moneyplant.core.to.response.OrderResponseCoreTO;
 
-public interface OrderAdapter<RequestTO extends OrderRequestCoreTO, ResponseTO extends OrderResponseCoreTO> {
-    ResponseTO place(RequestTO requestTO);
+public interface OrderAdapter<RequestT extends OrderRequestCoreTO, ResponseT extends OrderResponseCoreTO> {
+    ResponseT place(RequestT requestTO);
 
-    ResponseTO replace(RequestTO requestTO);
+    ResponseT replace(RequestT requestTO);
 
-    ResponseTO order(RequestTO requestTO);
+    ResponseT order(RequestT requestTO);
 
-    ResponseTO cancel(RequestTO requestTO);
+    ResponseT cancel(RequestT requestTO);
 
-    ResponseTO orders(RequestTO requestTO);
+    ResponseT orders(RequestT requestTO);
 }

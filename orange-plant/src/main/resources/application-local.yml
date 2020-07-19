@@ -10,3 +10,13 @@ orange-plant:
     user-id: rb2977
     logging-enabled: true
     login-url: https://kite.trade/connect/login?v={v}&api_key={api_key}
+  trade-preference:
+    exchange: NFO
+    segments:
+      - EQ
+      - NFO-FUT
+      - NFO-OPT
+    instrument: BANKNIFTY
+    expiry-start-date: 01-07-20
+    expiry-end-date: 30-07-20
+

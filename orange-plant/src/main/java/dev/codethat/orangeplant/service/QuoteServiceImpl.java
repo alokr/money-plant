@@ -20,11 +20,6 @@ public class QuoteServiceImpl implements QuoteService<QuoteRequestTO, QuoteRespo
     }
 
     @Override
-    public QuoteResponseTO instruments(QuoteRequestTO quoteRequestTO, String exchange) throws Exception {
-        return null;
-    }
-
-    @Override
     public QuoteResponseTO quote(QuoteRequestTO quoteRequestTO) throws Exception {
         return null;
     }

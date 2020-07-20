@@ -30,7 +30,7 @@ public class AccountAdapterImpl implements AccountAdapter<AccountRequestTO, Acco
 
     @Override
     public AccountResponseTO margin(AccountRequestTO accountRequestTO) throws Exception {
-        KiteConnect kiteConnect = moneyPlantCache.broker();
+        KiteConnect kiteConnect = moneyPlantCache.httpBrokerClient();
         AccountResponseTO accountResponseTO = new AccountResponseTO();
         try {
             accountResponseTO.setMargin(kiteConnect.getMargins(accountRequestTO.getSegment()));

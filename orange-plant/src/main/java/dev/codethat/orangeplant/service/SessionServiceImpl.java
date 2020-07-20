@@ -14,7 +14,7 @@ public class SessionServiceImpl implements SessionService<SessionRequestTO, Sess
     private SessionAdapter<SessionRequestTO, SessionResponseTO> adapter;
 
     @Inject
-    public SessionServiceImpl(SessionAdapterImpl adapter) {
+    public SessionServiceImpl(SessionAdapter adapter) {
         this.adapter = adapter;
     }
 

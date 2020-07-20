@@ -7,8 +7,13 @@ import javax.inject.Named;
 @Named
 public class OrangePlantCache extends MoneyPlantCache {
     @Override
-    public <T> T broker() {
-        return (T) CACHE.get(MoneyPlantCache.BROKER_CLIENT_SESSION_KEY);
+    public <T> T httpBrokerClient() {
+        return (T) CACHE.get(MoneyPlantCache.BROKER_HTTP_CLIENT_KEY);
+    }
+
+    @Override
+    public <T> T wsBrokerClient() {
+        return (T) CACHE.get(MoneyPlantCache.BROKER_WS_CLIENT_KEY);
     }
 
     @Override

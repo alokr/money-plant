@@ -2,31 +2,20 @@ package dev.codethat.orangeplant.to.response;
 
 import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.models.User;
+import com.zerodhatech.ticker.KiteTicker;
 import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.io.IOException;
 
+@Data
 public class SessionResponseTO extends SessionResponseCoreTO {
     private static final long serialVersionUID = 4489356047088770010L;
 
     transient private KiteConnect kiteConnect;
+    transient private KiteTicker kiteTicker;
     transient private User user;
-
-    public KiteConnect getKiteConnect() {
-        return kiteConnect;
-    }
-
-    public void setKiteConnect(KiteConnect kiteConnect) {
-        this.kiteConnect = kiteConnect;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
@@ -34,6 +23,9 @@ public class SessionResponseTO extends SessionResponseCoreTO {
         out.writeUTF(kiteConnect.getApiKey());
         out.writeUTF(kiteConnect.getPublicToken());
         out.writeUTF(kiteConnect.getAccessToken());
+        // kiteTicker
+        out.writeUTF(kiteConnect.getAccessToken());
+        out.writeUTF(kiteConnect.getApiKey());
         // user
         out.writeUTF(user.refreshToken);
     }
@@ -45,6 +37,9 @@ public class SessionResponseTO extends SessionResponseCoreTO {
         kiteConnect.setPublicToken(in.readUTF());
         kiteConnect.setAccessToken(in.readUTF());
         this.setKiteConnect(kiteConnect);
+        // kiteTicker
+        KiteTicker kiteTicker = new KiteTicker(in.readUTF(), in.readUTF());
+        this.setKiteTicker(kiteTicker);
         // user
         User user = new User();
         // TODO refreshToken is blank

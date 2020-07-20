@@ -1,9 +1,15 @@
 package dev.codethat.moneyplant.core.adapter;
 
-public interface StreamingAdapter<T> {
-    Object connect();
+import java.util.List;
 
-    Object subscribe();
+public interface StreamingAdapter {
+    boolean init();
 
-    Object unsubscribe();
+    boolean connect();
+
+    <T> boolean subscribe(List<T> tickerIds);
+
+    <T> boolean unsubscribe(List<T> tickerIds);
+
+    boolean disconnect();
 }

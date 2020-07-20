@@ -1,7 +1,7 @@
 package dev.codethat.orangeplant.runner;
 
 import dev.codethat.moneyplant.core.runner.MoneyPlantCoreApplicationRunner;
-import dev.codethat.orangeplant.boot.Bootstrap;
+import dev.codethat.orangeplant.boot.OrangePlantBootstrap;
 import dev.codethat.orangeplant.constants.OrangePlantConstants;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,10 +13,10 @@ import java.io.InputStreamReader;
 @Named
 @Slf4j
 public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunner {
-    private final Bootstrap bootstrap;
+    private final OrangePlantBootstrap bootstrap;
 
     @Inject
-    public OrangePlantApplicationRunner(final Bootstrap bootstrap) {
+    public OrangePlantApplicationRunner(final OrangePlantBootstrap bootstrap) {
         this.bootstrap = bootstrap;
     }
 
@@ -28,11 +28,14 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
                 log.info("Retrieving margin...");
                 if (bootstrap.margin(OrangePlantConstants.MARGIN_SEGMENT)) {
                     log.info("Retrieving instruments...");
-                    log.info("Enter exchange");
                     if (bootstrap.instruments("NFO")) {
-                        log.info("Retrieving quotes...");
-                        log.info("Enter instruments");
-                        log.info("Subscribing ticks...");
+                        log.info("Initializing streaming...");
+                        if (bootstrap.initStreaming()) {
+                            log.info("Opening streaming...");
+                            if (bootstrap.streamData()) {
+
+                            }
+                        }
                     }
                 }
             } else {

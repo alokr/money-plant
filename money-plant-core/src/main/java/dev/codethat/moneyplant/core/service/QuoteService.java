@@ -6,8 +6,6 @@ import dev.codethat.moneyplant.core.to.response.QuoteResponseCoreTO;
 public interface QuoteService<RequestT extends QuoteRequestCoreTO, ResponseT extends QuoteResponseCoreTO> {
     ResponseT instruments(RequestT requestTO) throws Exception;
 
-    ResponseT instruments(RequestT requestTO, String exchange) throws Exception;
-
     ResponseT quote(RequestT requestTO) throws Exception;
 
     ResponseT ohlc(RequestT requestTO) throws Exception;

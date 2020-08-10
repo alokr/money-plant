@@ -10,14 +10,15 @@ import java.util.Calendar;
 @Named
 @Slf4j
 public class FileUtil {
-    public SessionResponseCoreTO serializeSession(final String sessionFile) throws IOException, ClassNotFoundException {
+    public SessionResponseCoreTO deserializeSession(final String sessionFile) throws IOException, ClassNotFoundException {
         SessionResponseCoreTO sessionResponseTO = null;
         File file = new File(sessionFile);
         if (file.exists()) {
+            // old session
             Calendar sessionCal = Calendar.getInstance();
             sessionCal.setTimeInMillis(file.lastModified());
-            // old session
-            if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > sessionCal.get(Calendar.DAY_OF_MONTH)) {
+            if (Math.abs(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                    - sessionCal.get(Calendar.DAY_OF_MONTH)) > 0) {
                 boolean deleted = file.delete();
                 log.warn("Found invalid session. SessionDeleteStatus={}", deleted);
                 return null;
@@ -29,7 +30,7 @@ public class FileUtil {
         return sessionResponseTO;
     }
 
-    public void deserializeSession(final SessionResponseCoreTO responseCoreTO, String sessionFile) throws IOException {
+    public void serializeSession(final SessionResponseCoreTO responseCoreTO, String sessionFile) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(sessionFile)));
         oos.writeObject(responseCoreTO);
         log.info("Serialized session");

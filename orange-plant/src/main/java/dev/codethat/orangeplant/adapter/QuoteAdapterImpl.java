@@ -22,7 +22,7 @@ public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteRespo
 
     @Override
     public QuoteResponseTO instruments(QuoteRequestTO quoteRequestTO) throws Exception {
-        KiteConnect kiteConnect = moneyPlantCache.httpBrokerClient();
+        KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
         QuoteResponseTO quoteResponseTO = null;
         try {
             quoteResponseTO = new QuoteResponseTO();
@@ -36,7 +36,7 @@ public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteRespo
 
     @Override
     public QuoteResponseTO quote(QuoteRequestTO quoteRequestTO) throws Exception {
-        KiteConnect kiteConnect = moneyPlantCache.httpBrokerClient();
+        KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
         QuoteResponseTO quoteResponseTO = null;
         try {
             quoteResponseTO = new QuoteResponseTO();

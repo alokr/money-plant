@@ -3,6 +3,6 @@ package dev.codethat.moneyplant.core.to.request;
 import lombok.Data;
 
 @Data
-public abstract class QuoteRequestCoreTO {
+public class QuoteRequestCoreTO {
     private String exchange;
 }

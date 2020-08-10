@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @ConfigurationProperties("orangeplant")
 public class OrangePlantApplicationProperties {
+    private String zoneOffset;
     private KiteConnect kiteConnect;
     private TradePreference tradePreference ;
 

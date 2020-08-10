@@ -1,4 +1,4 @@
 package dev.codethat.moneyplant.core.to.response;
 
-public abstract class AccountResponseCoreTO {
+public class AccountResponseCoreTO {
 }

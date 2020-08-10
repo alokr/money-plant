@@ -17,9 +17,9 @@ public abstract class MoneyPlantCache {
 
     public Map<String, Object> CACHE = new HashMap<>();
 
-    public abstract <T> T httpBrokerClient();
+    public abstract <T> T brokerHttpClient();
 
-    public abstract <T> T wsBrokerClient();
+    public abstract <T> T brokerWSClient();
 
     public abstract <T> T user();
 }

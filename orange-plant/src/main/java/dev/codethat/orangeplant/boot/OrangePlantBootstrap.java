@@ -1,17 +1,19 @@
 package dev.codethat.orangeplant.boot;
 
+import com.zerodhatech.kiteconnect.utils.Constants;
 import com.zerodhatech.models.Instrument;
+import com.zerodhatech.models.Order;
+import com.zerodhatech.models.OrderParams;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
-import dev.codethat.moneyplant.core.service.AccountService;
-import dev.codethat.moneyplant.core.service.QuoteService;
-import dev.codethat.moneyplant.core.service.SessionService;
-import dev.codethat.moneyplant.core.service.StreamingService;
+import dev.codethat.moneyplant.core.service.*;
 import dev.codethat.moneyplant.core.util.FileUtil;
 import dev.codethat.orangeplant.to.request.AccountRequestTO;
+import dev.codethat.orangeplant.to.request.OrderRequestTO;
 import dev.codethat.orangeplant.to.request.QuoteRequestTO;
 import dev.codethat.orangeplant.to.request.SessionRequestTO;
 import dev.codethat.orangeplant.to.response.AccountResponseTO;
+import dev.codethat.orangeplant.to.response.OrderResponseTO;
 import dev.codethat.orangeplant.to.response.QuoteResponseTO;
 import dev.codethat.orangeplant.to.response.SessionResponseTO;
 import dev.codethat.orangeplant.util.DataExtractor;
@@ -33,21 +35,23 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final MoneyPlantCache moneyPlantCache;
 
-    private final SessionService<SessionRequestTO, SessionResponseTO> sessionService;
+    private final SessionService sessionService;
 
-    private final AccountService<AccountRequestTO, AccountResponseTO> accountService;
+    private final AccountService accountService;
 
-    private final QuoteService<QuoteRequestTO, QuoteResponseTO> quoteService;
+    private final QuoteService quoteService;
+
+    private final OrderService orderService;
 
     private final StreamingService streamingService;
 
     private final FileUtil fileUtil;
 
-    private final DataExtractor beanUtil;
+    private final DataExtractor dataExtractor;
 
     @Override
     public boolean login(final BufferedReader reader) throws Exception {
-        SessionResponseTO sessionResponseTO = (SessionResponseTO) fileUtil.serializeSession(SESSION_RESPONSE_TO_SER);
+        SessionResponseTO sessionResponseTO = (SessionResponseTO) fileUtil.deserializeSession(SESSION_RESPONSE_TO_SER);
         if (Objects.isNull(sessionResponseTO)) {
             log.info("Enter requestToken:");
             String requestToken = reader.readLine();
@@ -57,9 +61,9 @@ public class OrangePlantBootstrap implements BootstrapCore {
             SessionRequestTO sessionRequestTO = new SessionRequestTO();
             sessionRequestTO.setRequestToken(requestToken);
             log.info("Creating new session");
-            sessionResponseTO = sessionService.login(sessionRequestTO);
+            sessionResponseTO = (SessionResponseTO) sessionService.login(sessionRequestTO);
             if (!Objects.isNull(sessionResponseTO)) {
-                fileUtil.deserializeSession(sessionResponseTO, SESSION_RESPONSE_TO_SER);
+                fileUtil.serializeSession(sessionResponseTO, SESSION_RESPONSE_TO_SER);
             } else {
                 return false;
             }
@@ -78,7 +82,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
         AccountRequestTO accountRequestTO = new AccountRequestTO();
         accountRequestTO.setSegment(segment);
 
-        AccountResponseTO accountResponseTO = accountService.margin(accountRequestTO);
+        AccountResponseTO accountResponseTO = (AccountResponseTO) accountService.margin(accountRequestTO);
         log.info("Net={}", accountResponseTO.getMargin().net);
         log.info("Cash={}", accountResponseTO.getMargin().available.cash);
         log.info("OptionPremium={}", accountResponseTO.getMargin().utilised.optionPremium);
@@ -90,9 +94,9 @@ public class OrangePlantBootstrap implements BootstrapCore {
     public boolean instruments(String exchange) throws Exception {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
         quoteRequestTO.setExchange(exchange);
-        QuoteResponseTO quoteResponseTO = quoteService.instruments(quoteRequestTO);
+        QuoteResponseTO quoteResponseTO = (QuoteResponseTO) quoteService.instruments(quoteRequestTO);
         log.info("Retrieved instruments");
-        beanUtil.extractInstruments(quoteResponseTO.getInstruments());
+        dataExtractor.extractInstruments(quoteResponseTO.getInstruments());
         return true;
     }
 
@@ -115,6 +119,23 @@ public class OrangePlantBootstrap implements BootstrapCore {
         log.info("Subscribing instruments...");
         streamingService.subscribe(tickerIds);
         log.info("Subscribed instruments...");
+
+        OrderRequestTO orderRequestTO = new OrderRequestTO();
+        OrderParams orderParams = new OrderParams();
+        orderParams.quantity = 1;
+        orderParams.orderType = Constants.ORDER_TYPE_LIMIT;
+        orderParams.tradingsymbol = "ASHOKLEY";
+        orderParams.product = Constants.PRODUCT_CNC;
+        orderParams.exchange = Constants.EXCHANGE_NSE;
+        orderParams.transactionType = Constants.TRANSACTION_TYPE_BUY;
+        orderParams.validity = Constants.VALIDITY_DAY;
+        orderParams.price = 50.0;
+        orderRequestTO.setOrderParams(orderParams);
+        try {
+            OrderResponseTO orderResponseTO = (OrderResponseTO) orderService.place(orderRequestTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 

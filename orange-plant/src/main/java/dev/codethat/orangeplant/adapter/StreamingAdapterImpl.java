@@ -35,7 +35,7 @@ public class StreamingAdapterImpl implements StreamingAdapter {
 
     @Override
     public boolean init() {
-        this.kiteTicker = (KiteTicker) moneyPlantCache.CACHE.get(MoneyPlantCache.BROKER_WS_CLIENT_KEY);
+        this.kiteTicker = moneyPlantCache.brokerWSClient();
         kiteTicker.setOnConnectedListener((OnConnect) connectionCoreListener);
         kiteTicker.setOnDisconnectedListener((OnDisconnect) connectionCoreListener);
         kiteTicker.setOnTickerArrivalListener((OnTicks) tickCoreListener);

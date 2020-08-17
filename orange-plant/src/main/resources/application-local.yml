@@ -17,6 +17,5 @@ orange-plant:
       - NFO-FUT
       - NFO-OPT
     instrument: BANKNIFTY
-    expiry-start-date: 01-07-20
-    expiry-end-date: 30-07-20
-
+    expiry-start-date: 01-08-20
+    expiry-end-date: 27-08-20

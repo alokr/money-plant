@@ -1,6 +1,6 @@
-package dev.codethat.orangeplant.to.request;
+package dev.codethat.orangeplant.bean.request;
 
-import dev.codethat.moneyplant.core.to.request.AccountRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.request.AccountRequestCoreTO;
 import lombok.Data;
 
 @Data

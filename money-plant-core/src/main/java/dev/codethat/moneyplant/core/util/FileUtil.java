@@ -1,6 +1,6 @@
 package dev.codethat.moneyplant.core.util;
 
-import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
+import dev.codethat.moneyplant.core.bean.response.SessionResponseCoreTO;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Named;

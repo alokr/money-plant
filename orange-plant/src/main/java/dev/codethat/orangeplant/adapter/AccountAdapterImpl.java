@@ -6,8 +6,8 @@ import dev.codethat.moneyplant.core.adapter.AccountAdapter;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.moneyplant.core.httpclient.MoneyPlantCoreHttpClient;
 import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
-import dev.codethat.orangeplant.to.request.AccountRequestTO;
-import dev.codethat.orangeplant.to.response.AccountResponseTO;
+import dev.codethat.orangeplant.bean.request.AccountRequestTO;
+import dev.codethat.orangeplant.bean.response.AccountResponseTO;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;

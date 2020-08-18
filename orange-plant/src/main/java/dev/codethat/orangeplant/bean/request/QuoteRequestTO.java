@@ -1,8 +1,7 @@
-package dev.codethat.orangeplant.to.request;
+package dev.codethat.orangeplant.bean.request;
 
 import com.zerodhatech.models.Quote;
-import dev.codethat.moneyplant.core.to.request.AccountRequestCoreTO;
-import dev.codethat.moneyplant.core.to.request.QuoteRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.request.QuoteRequestCoreTO;
 import lombok.Data;
 
 import java.util.Map;

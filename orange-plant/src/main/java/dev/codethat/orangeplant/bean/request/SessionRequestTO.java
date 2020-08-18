@@ -1,6 +1,6 @@
-package dev.codethat.orangeplant.to.request;
+package dev.codethat.orangeplant.bean.request;
 
-import dev.codethat.moneyplant.core.to.request.SessionRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.request.SessionRequestCoreTO;
 
 public class SessionRequestTO extends SessionRequestCoreTO {
     private String requestToken;

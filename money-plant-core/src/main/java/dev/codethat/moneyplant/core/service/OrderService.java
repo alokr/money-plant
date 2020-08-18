@@ -1,9 +1,7 @@
 package dev.codethat.moneyplant.core.service;
 
-import dev.codethat.moneyplant.core.to.request.OrderRequestCoreTO;
-import dev.codethat.moneyplant.core.to.request.SessionRequestCoreTO;
-import dev.codethat.moneyplant.core.to.response.OrderResponseCoreTO;
-import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
+import dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO;
 
 public interface OrderService<RequestT extends OrderRequestCoreTO, ResponseT extends OrderResponseCoreTO> {
     ResponseT place(RequestT requestTO) throws Exception;

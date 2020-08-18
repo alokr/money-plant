@@ -1,7 +1,7 @@
 package dev.codethat.moneyplant.core.service;
 
-import dev.codethat.moneyplant.core.to.request.QuoteRequestCoreTO;
-import dev.codethat.moneyplant.core.to.response.QuoteResponseCoreTO;
+import dev.codethat.moneyplant.core.bean.request.QuoteRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.response.QuoteResponseCoreTO;
 
 public interface QuoteService<RequestT extends QuoteRequestCoreTO, ResponseT extends QuoteResponseCoreTO> {
     ResponseT instruments(RequestT requestTO) throws Exception;

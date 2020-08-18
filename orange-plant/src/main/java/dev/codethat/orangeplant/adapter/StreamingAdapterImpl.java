@@ -52,7 +52,7 @@ public class StreamingAdapterImpl implements StreamingAdapter {
     @Override
     public <T> boolean subscribe(List<T> tickerIds) {
         kiteTicker.subscribe((ArrayList<Long>) tickerIds);
-        kiteTicker.setMode((ArrayList<Long>) tickerIds, KiteTicker.modeFull);
+        kiteTicker.setMode((ArrayList<Long>) tickerIds, KiteTicker.modeQuote);
         return true;
     }
 

@@ -1,7 +1,7 @@
-package dev.codethat.orangeplant.to.response;
+package dev.codethat.orangeplant.bean.response;
 
 import com.zerodhatech.models.Instrument;
-import dev.codethat.moneyplant.core.to.response.QuoteResponseCoreTO;
+import dev.codethat.moneyplant.core.bean.response.QuoteResponseCoreTO;
 import lombok.Data;
 
 import java.util.List;

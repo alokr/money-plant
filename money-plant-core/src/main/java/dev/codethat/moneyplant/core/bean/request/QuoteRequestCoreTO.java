@@ -1,4 +1,4 @@
-package dev.codethat.moneyplant.core.to.request;
+package dev.codethat.moneyplant.core.bean.request;
 
 import lombok.Data;
 

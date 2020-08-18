@@ -6,8 +6,8 @@ import com.zerodhatech.models.User;
 import com.zerodhatech.ticker.KiteTicker;
 import dev.codethat.moneyplant.core.adapter.SessionAdapter;
 import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
-import dev.codethat.orangeplant.to.request.SessionRequestTO;
-import dev.codethat.orangeplant.to.response.SessionResponseTO;
+import dev.codethat.orangeplant.bean.request.SessionRequestTO;
+import dev.codethat.orangeplant.bean.response.SessionResponseTO;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;

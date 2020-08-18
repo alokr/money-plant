@@ -2,8 +2,8 @@ package dev.codethat.orangeplant.service;
 
 import dev.codethat.moneyplant.core.adapter.AccountAdapter;
 import dev.codethat.moneyplant.core.service.AccountService;
-import dev.codethat.orangeplant.to.request.AccountRequestTO;
-import dev.codethat.orangeplant.to.response.AccountResponseTO;
+import dev.codethat.orangeplant.bean.request.AccountRequestTO;
+import dev.codethat.orangeplant.bean.response.AccountResponseTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

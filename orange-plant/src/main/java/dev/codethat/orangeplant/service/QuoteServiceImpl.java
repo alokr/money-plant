@@ -2,8 +2,8 @@ package dev.codethat.orangeplant.service;
 
 import dev.codethat.moneyplant.core.adapter.QuoteAdapter;
 import dev.codethat.moneyplant.core.service.QuoteService;
-import dev.codethat.orangeplant.to.request.QuoteRequestTO;
-import dev.codethat.orangeplant.to.response.QuoteResponseTO;
+import dev.codethat.orangeplant.bean.request.QuoteRequestTO;
+import dev.codethat.orangeplant.bean.response.QuoteResponseTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

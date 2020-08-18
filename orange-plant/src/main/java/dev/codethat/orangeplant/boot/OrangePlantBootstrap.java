@@ -2,20 +2,19 @@ package dev.codethat.orangeplant.boot;
 
 import com.zerodhatech.kiteconnect.utils.Constants;
 import com.zerodhatech.models.Instrument;
-import com.zerodhatech.models.Order;
 import com.zerodhatech.models.OrderParams;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.moneyplant.core.service.*;
 import dev.codethat.moneyplant.core.util.FileUtil;
-import dev.codethat.orangeplant.to.request.AccountRequestTO;
-import dev.codethat.orangeplant.to.request.OrderRequestTO;
-import dev.codethat.orangeplant.to.request.QuoteRequestTO;
-import dev.codethat.orangeplant.to.request.SessionRequestTO;
-import dev.codethat.orangeplant.to.response.AccountResponseTO;
-import dev.codethat.orangeplant.to.response.OrderResponseTO;
-import dev.codethat.orangeplant.to.response.QuoteResponseTO;
-import dev.codethat.orangeplant.to.response.SessionResponseTO;
+import dev.codethat.orangeplant.bean.request.AccountRequestTO;
+import dev.codethat.orangeplant.bean.request.OrderRequestTO;
+import dev.codethat.orangeplant.bean.request.QuoteRequestTO;
+import dev.codethat.orangeplant.bean.request.SessionRequestTO;
+import dev.codethat.orangeplant.bean.response.AccountResponseTO;
+import dev.codethat.orangeplant.bean.response.OrderResponseTO;
+import dev.codethat.orangeplant.bean.response.QuoteResponseTO;
+import dev.codethat.orangeplant.bean.response.SessionResponseTO;
 import dev.codethat.orangeplant.util.DataExtractor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,23 +118,6 @@ public class OrangePlantBootstrap implements BootstrapCore {
         log.info("Subscribing instruments...");
         streamingService.subscribe(tickerIds);
         log.info("Subscribed instruments...");
-
-        OrderRequestTO orderRequestTO = new OrderRequestTO();
-        OrderParams orderParams = new OrderParams();
-        orderParams.quantity = 1;
-        orderParams.orderType = Constants.ORDER_TYPE_LIMIT;
-        orderParams.tradingsymbol = "ASHOKLEY";
-        orderParams.product = Constants.PRODUCT_CNC;
-        orderParams.exchange = Constants.EXCHANGE_NSE;
-        orderParams.transactionType = Constants.TRANSACTION_TYPE_BUY;
-        orderParams.validity = Constants.VALIDITY_DAY;
-        orderParams.price = 50.0;
-        orderRequestTO.setOrderParams(orderParams);
-        try {
-            OrderResponseTO orderResponseTO = (OrderResponseTO) orderService.place(orderRequestTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return true;
     }
 

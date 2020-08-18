@@ -1,4 +1,4 @@
-package dev.codethat.moneyplant.core.to.response;
+package dev.codethat.moneyplant.core.bean.response;
 
 import java.io.Serializable;
 

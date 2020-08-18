@@ -1,10 +1,9 @@
-package dev.codethat.orangeplant.to.response;
+package dev.codethat.orangeplant.bean.response;
 
 import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.models.User;
 import com.zerodhatech.ticker.KiteTicker;
-import dev.codethat.moneyplant.core.to.response.SessionResponseCoreTO;
-import lombok.AllArgsConstructor;
+import dev.codethat.moneyplant.core.bean.response.SessionResponseCoreTO;
 import lombok.Data;
 
 import java.io.IOException;

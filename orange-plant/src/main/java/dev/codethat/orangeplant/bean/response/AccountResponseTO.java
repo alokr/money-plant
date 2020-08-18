@@ -1,8 +1,8 @@
-package dev.codethat.orangeplant.to.response;
+package dev.codethat.orangeplant.bean.response;
 
 import com.zerodhatech.models.Margin;
 import com.zerodhatech.models.Profile;
-import dev.codethat.moneyplant.core.to.response.AccountResponseCoreTO;
+import dev.codethat.moneyplant.core.bean.response.AccountResponseCoreTO;
 import lombok.Data;
 
 @Data

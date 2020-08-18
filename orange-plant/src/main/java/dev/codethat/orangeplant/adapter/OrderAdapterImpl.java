@@ -6,8 +6,8 @@ import com.zerodhatech.kiteconnect.utils.Constants;
 import dev.codethat.moneyplant.core.adapter.OrderAdapter;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
-import dev.codethat.orangeplant.to.request.OrderRequestTO;
-import dev.codethat.orangeplant.to.response.OrderResponseTO;
+import dev.codethat.orangeplant.bean.request.OrderRequestTO;
+import dev.codethat.orangeplant.bean.response.OrderResponseTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

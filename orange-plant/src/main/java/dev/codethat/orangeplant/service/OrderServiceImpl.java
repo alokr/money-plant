@@ -2,8 +2,8 @@ package dev.codethat.orangeplant.service;
 
 import dev.codethat.moneyplant.core.adapter.OrderAdapter;
 import dev.codethat.moneyplant.core.service.OrderService;
-import dev.codethat.orangeplant.to.request.OrderRequestTO;
-import dev.codethat.orangeplant.to.response.OrderResponseTO;
+import dev.codethat.orangeplant.bean.request.OrderRequestTO;
+import dev.codethat.orangeplant.bean.response.OrderResponseTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

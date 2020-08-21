@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@ConfigurationProperties("orangeplant")
+@ConfigurationProperties("orange-plant")
 public class OrangePlantApplicationProperties {
     private String zoneOffset;
     private KiteConnect kiteConnect;

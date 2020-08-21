@@ -1,0 +1,6 @@
+money-plant:
+  technical:
+    bar-series:
+      bar-count: 7
+    atr:
+      bar-count: 7

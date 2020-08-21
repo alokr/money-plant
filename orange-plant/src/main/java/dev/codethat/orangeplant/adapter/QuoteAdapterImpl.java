@@ -50,7 +50,16 @@ public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteRespo
 
     @Override
     public QuoteResponseTO ohlc(QuoteRequestTO quoteRequestTO) throws Exception {
-        return null;
+        KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
+        QuoteResponseTO quoteResponseTO = null;
+        try {
+            quoteResponseTO = new QuoteResponseTO();
+            quoteRequestTO.setQuoteMap(kiteConnect.getQuote(quoteRequestTO.getInstruments()));
+        } catch (KiteException e) {
+            log.error("Exception occurred. Message={}", e.getMessage());
+            throw new Exception(e);
+        }
+        return quoteResponseTO;
     }
 
     @Override

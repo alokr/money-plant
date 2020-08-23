@@ -1,9 +1,9 @@
 orange-plant:
   kite-connect:
     api:
-      key: yls7q6s0ddixuc99
+      key:
       version: 3
-      secret: fg72na1di168g8h1nmk0n1khb1cwqfty
+      secret: 
     query-params:
       api-key: api_key
       version: v

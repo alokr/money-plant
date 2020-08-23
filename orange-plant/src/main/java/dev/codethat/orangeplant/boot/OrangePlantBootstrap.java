@@ -1,26 +1,33 @@
 package dev.codethat.orangeplant.boot;
 
-import com.zerodhatech.kiteconnect.utils.Constants;
 import com.zerodhatech.models.Instrument;
-import com.zerodhatech.models.OrderParams;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
+import dev.codethat.moneyplant.core.constants.MoneyPlantConstants;
+import dev.codethat.moneyplant.core.scheduler.ReadCandleTask;
 import dev.codethat.moneyplant.core.service.*;
+import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.moneyplant.core.util.FileUtil;
 import dev.codethat.orangeplant.bean.request.AccountRequestTO;
-import dev.codethat.orangeplant.bean.request.OrderRequestTO;
 import dev.codethat.orangeplant.bean.request.QuoteRequestTO;
 import dev.codethat.orangeplant.bean.request.SessionRequestTO;
 import dev.codethat.orangeplant.bean.response.AccountResponseTO;
-import dev.codethat.orangeplant.bean.response.OrderResponseTO;
 import dev.codethat.orangeplant.bean.response.QuoteResponseTO;
 import dev.codethat.orangeplant.bean.response.SessionResponseTO;
+import dev.codethat.orangeplant.constants.OrangePlantConstants;
+import dev.codethat.orangeplant.scheduler.OrangePlantReadCandleTask;
+import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
 import dev.codethat.orangeplant.util.DataExtractor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.TaskScheduler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.BufferedReader;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +37,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public class OrangePlantBootstrap implements BootstrapCore {
-    private final static String SESSION_RESPONSE_TO_SER = "data/orange/session/sessionResponseTO.ser";
+    private final MoneyPlantApplicationProperties moneyPlantApplicationProperties;
+
+    private final OrangePlantApplicationProperties orangePlantApplicationProperties;
 
     private final MoneyPlantCache moneyPlantCache;
 
@@ -48,9 +57,15 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final DataExtractor dataExtractor;
 
+    @Inject
+    @Qualifier(MoneyPlantConstants.BEAN_READ_CANDLE_TASK_SCHEDULER)
+    private final TaskScheduler readCandleTaskScheduler;
+
+    private final OrangePlantReadCandleTask readCandleTask;
+
     @Override
     public boolean login(final BufferedReader reader) throws Exception {
-        SessionResponseTO sessionResponseTO = (SessionResponseTO) fileUtil.deserializeSession(SESSION_RESPONSE_TO_SER);
+        SessionResponseTO sessionResponseTO = (SessionResponseTO) fileUtil.deserializeSession(OrangePlantConstants.SESSION_RESPONSE_TO_SER);
         if (Objects.isNull(sessionResponseTO)) {
             log.info("Enter requestToken:");
             String requestToken = reader.readLine();
@@ -62,7 +77,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
             log.info("Creating new session");
             sessionResponseTO = (SessionResponseTO) sessionService.login(sessionRequestTO);
             if (!Objects.isNull(sessionResponseTO)) {
-                fileUtil.serializeSession(sessionResponseTO, SESSION_RESPONSE_TO_SER);
+                fileUtil.serializeSession(sessionResponseTO, OrangePlantConstants.SESSION_RESPONSE_TO_SER);
             } else {
                 return false;
             }
@@ -107,17 +122,40 @@ public class OrangePlantBootstrap implements BootstrapCore {
     }
 
     @Override
-    public boolean streamData() {
+    public boolean streamTicker() {
         streamingService.connect();
-        List<Long> tickerIds = ((Map<String, Instrument>) moneyPlantCache.CACHE
+        List<Long> instrumentTokens = ((Map<String, Instrument>) moneyPlantCache.CACHE
                 .get(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS))
                 .values()
                 .stream()
                 .map(Instrument::getInstrument_token)
                 .collect(Collectors.toList());
         log.info("Subscribing instruments...");
-        streamingService.subscribe(tickerIds);
-        log.info("Subscribed instruments...");
+        streamingService.subscribe(instrumentTokens);
+        log.info("Subscribed instruments");
+        return true;
+    }
+
+    @Override
+    public boolean scheduleTickerReading(String exchange, long candlePeriod) {
+        List<String> instrumentTokens = ((Map<String, Instrument>) moneyPlantCache.CACHE
+                .get(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS))
+                .values()
+                .stream()
+                .map(Instrument::getInstrument_token)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
+        quoteRequestTO.setExchange(exchange);
+        quoteRequestTO.setInstruments(instrumentTokens.toArray(new String[] {}));
+        readCandleTask.setQuoteRequestTO(quoteRequestTO);
+
+        readCandleTaskScheduler.scheduleWithFixedDelay(
+                readCandleTask
+                , Instant.now()
+                , Duration.ofMillis(candlePeriod));
+        log.info("Ticker reading scheduled");
         return true;
     }
 

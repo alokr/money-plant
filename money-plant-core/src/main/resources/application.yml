@@ -1,4 +1,7 @@
 money-plant:
+  market-data:
+    stream-enabled: false
+    candle-period: 5
   technical:
     bar-series:
       bar-count: 7

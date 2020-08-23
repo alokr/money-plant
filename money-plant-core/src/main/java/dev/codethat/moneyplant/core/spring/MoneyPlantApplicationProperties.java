@@ -7,6 +7,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("money-plant")
 public class MoneyPlantApplicationProperties {
     private Technical technical;
+    private MarketData marketData;
+
+    @Data
+    public static class MarketData {
+        private boolean streamEnabled;
+        private long candlePeriod;
+    }
 
     @Data
     public static class Technical {

@@ -11,7 +11,9 @@ public interface BootstrapCore {
 
     boolean initStreaming();
 
-    boolean streamData();
+    boolean streamTicker();
+
+    boolean scheduleTickerReading(String exchange, long candlePeriod);
 
     boolean trade();
 }

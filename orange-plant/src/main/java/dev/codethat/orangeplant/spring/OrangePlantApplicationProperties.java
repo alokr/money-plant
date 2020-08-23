@@ -11,7 +11,7 @@ import java.util.List;
 public class OrangePlantApplicationProperties {
     private String zoneOffset;
     private KiteConnect kiteConnect;
-    private TradePreference tradePreference ;
+    private TradePreference tradePreference;
 
     @Data
     public static class KiteConnect {

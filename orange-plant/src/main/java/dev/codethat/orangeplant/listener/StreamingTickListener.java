@@ -28,6 +28,7 @@ public class StreamingTickListener implements StreamingTickCoreListener, OnTicks
 
     private BarSeries barSeries;
     private ATRIndicator atrIndicator;
+
     @Override
     public void onTicks(ArrayList<Tick> ticks) {
         ticks.stream().forEach(

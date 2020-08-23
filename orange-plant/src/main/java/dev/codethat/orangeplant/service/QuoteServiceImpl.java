@@ -21,12 +21,12 @@ public class QuoteServiceImpl implements QuoteService<QuoteRequestTO, QuoteRespo
 
     @Override
     public QuoteResponseTO quote(QuoteRequestTO quoteRequestTO) throws Exception {
-        return null;
+        return (QuoteResponseTO) adapter.quote(quoteRequestTO);
     }
 
     @Override
-    public QuoteResponseTO ohlc(QuoteRequestTO quoteRequestTO) throws Exception {
-        return null;
+    public QuoteResponseTO ohlcQuote(QuoteRequestTO quoteRequestTO) throws Exception {
+        return (QuoteResponseTO) adapter.ohlcQuote(quoteRequestTO);
     }
 
     @Override

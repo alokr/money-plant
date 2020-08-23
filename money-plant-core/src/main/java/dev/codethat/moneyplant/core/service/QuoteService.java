@@ -8,7 +8,7 @@ public interface QuoteService<RequestT extends QuoteRequestCoreTO, ResponseT ext
 
     ResponseT quote(RequestT requestTO) throws Exception;
 
-    ResponseT ohlc(RequestT requestTO) throws Exception;
+    ResponseT ohlcQuote(RequestT requestTO) throws Exception;
 
     ResponseT ltp(RequestT requestTO) throws Exception;
 }

@@ -4,7 +4,6 @@ import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
 import dev.codethat.moneyplant.core.adapter.QuoteAdapter;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
-import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
 import dev.codethat.orangeplant.bean.request.QuoteRequestTO;
 import dev.codethat.orangeplant.bean.response.QuoteResponseTO;
 import lombok.AllArgsConstructor;
@@ -16,14 +15,12 @@ import javax.inject.Named;
 @Slf4j
 @AllArgsConstructor
 public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteResponseTO> {
-    private final OrangePlantApplicationProperties applicationProperties;
-
     private final MoneyPlantCache moneyPlantCache;
 
     @Override
     public QuoteResponseTO instruments(QuoteRequestTO quoteRequestTO) throws Exception {
         KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
-        QuoteResponseTO quoteResponseTO = null;
+        QuoteResponseTO quoteResponseTO;
         try {
             quoteResponseTO = new QuoteResponseTO();
             quoteResponseTO.setInstruments(kiteConnect.getInstruments(quoteRequestTO.getExchange()));
@@ -37,10 +34,10 @@ public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteRespo
     @Override
     public QuoteResponseTO quote(QuoteRequestTO quoteRequestTO) throws Exception {
         KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
-        QuoteResponseTO quoteResponseTO = null;
+        QuoteResponseTO quoteResponseTO;
         try {
             quoteResponseTO = new QuoteResponseTO();
-            quoteRequestTO.setQuoteMap(kiteConnect.getQuote(quoteRequestTO.getInstruments()));
+            quoteResponseTO.setQuoteMap(kiteConnect.getQuote(quoteRequestTO.getInstruments()));
         } catch (KiteException e) {
             log.error("Exception occurred. Message={}", e.getMessage());
             throw new Exception(e);
@@ -49,12 +46,12 @@ public class QuoteAdapterImpl implements QuoteAdapter<QuoteRequestTO, QuoteRespo
     }
 
     @Override
-    public QuoteResponseTO ohlc(QuoteRequestTO quoteRequestTO) throws Exception {
+    public QuoteResponseTO ohlcQuote(QuoteRequestTO quoteRequestTO) throws Exception {
         KiteConnect kiteConnect = moneyPlantCache.brokerHttpClient();
-        QuoteResponseTO quoteResponseTO = null;
+        QuoteResponseTO quoteResponseTO;
         try {
             quoteResponseTO = new QuoteResponseTO();
-            quoteRequestTO.setQuoteMap(kiteConnect.getQuote(quoteRequestTO.getInstruments()));
+            quoteResponseTO.setOhlcQuoteMapMap(kiteConnect.getOHLC(quoteRequestTO.getInstruments()));
         } catch (KiteException e) {
             log.error("Exception occurred. Message={}", e.getMessage());
             throw new Exception(e);

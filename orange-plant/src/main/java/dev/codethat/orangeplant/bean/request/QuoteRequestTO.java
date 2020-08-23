@@ -9,6 +9,4 @@ import java.util.Map;
 @Data
 public class QuoteRequestTO extends QuoteRequestCoreTO {
     private String[] instruments;
-
-    private Map<String, Quote> quoteMap;
 }

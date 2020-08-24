@@ -11,7 +11,8 @@ public class MoneyPlantApplicationProperties {
 
     @Data
     public static class MarketData {
-        private boolean streamEnabled;
+        private boolean tickerStreamingEnabled;
+        private boolean tickerReadingEnabled;
         private long candlePeriod;
     }
 

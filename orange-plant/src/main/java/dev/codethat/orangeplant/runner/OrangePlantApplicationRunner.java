@@ -39,7 +39,7 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
                 if (bootstrap.margin(OrangePlantConstants.MARGIN_SEGMENT)) {
                     log.info("Retrieving instruments...");
                     if (bootstrap.instruments(orangePlantApplicationProperties.getTradePreference().getExchange())) {
-                        if (moneyPlantApplicationProperties.getMarketData().isStreamEnabled()) {
+                        if (moneyPlantApplicationProperties.getMarketData().isTickerStreamingEnabled()) {
                             log.info("Initializing streaming...");
                             if (bootstrap.initStreaming()) {
                                 log.info("Opening streaming...");
@@ -48,10 +48,12 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
                                 }
                             }
                         }
-                        log.info("Scheduling ticker reading...");
-                        if (bootstrap.scheduleTickerReading(
-                                orangePlantApplicationProperties.getTradePreference().getExchange(),
-                                moneyPlantApplicationProperties.getMarketData().getCandlePeriod())) {
+                        if (moneyPlantApplicationProperties.getMarketData().isTickerReadingEnabled()) {
+                            log.info("Scheduling ticker reading...");
+                            if (bootstrap.scheduleTickerReading(
+                                    orangePlantApplicationProperties.getTradePreference().getExchange(),
+                                    moneyPlantApplicationProperties.getMarketData().getCandlePeriod())) {
+                            }
                         }
                     }
                 }

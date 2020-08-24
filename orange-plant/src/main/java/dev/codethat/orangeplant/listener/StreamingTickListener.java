@@ -1,5 +1,7 @@
 package dev.codethat.orangeplant.listener;
 
+import com.google.common.cache.*;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.zerodhatech.models.Tick;
 import com.zerodhatech.ticker.OnTicks;
 import dev.codethat.moneyplant.core.listener.StreamingTickCoreListener;
@@ -11,19 +13,44 @@ import org.ta4j.core.indicators.ATRIndicator;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Named
 @Slf4j
 public class StreamingTickListener implements StreamingTickCoreListener, OnTicks {
-    private MoneyPlantApplicationProperties coreApplicationProperties;
+    private MoneyPlantApplicationProperties moneyPlantApplicationProperties;
+
+    private List<Double> tickList;
+
+    private LoadingCache<Long, List<Double>> candleStickCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(30, TimeUnit.SECONDS)
+            .removalListener((RemovalListener<Long, List<Double>>) removalNotification -> {
+                System.out.println(removalNotification.getValue().get(0));
+                tickList = new ArrayList<>();
+                System.out.println("evicted");
+            })
+            .build(
+                    new CacheLoader<>() {
+                        @Override
+                        public List<Double> load(Long instrumentToken) {
+                            tickList = new ArrayList<>();
+                            System.out.println("loaded");
+                            return tickList;
+                        }
+                    }
+            );
 
     @Inject
     public StreamingTickListener(MoneyPlantApplicationProperties moneyPlantApplicationProperties) {
-        this.coreApplicationProperties = moneyPlantApplicationProperties;
+        this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
     }
 
     private BarSeries barSeries;
@@ -35,22 +62,28 @@ public class StreamingTickListener implements StreamingTickCoreListener, OnTicks
                 tick -> {
                     if (Objects.isNull(barSeries)) {
                         barSeries = new BaseBarSeries();
-                        barSeries.setMaximumBarCount(coreApplicationProperties.getTechnical()
+                        barSeries.setMaximumBarCount(moneyPlantApplicationProperties.getTechnical()
                                 .getBarSeries().getBarCount());
-                        atrIndicator = new ATRIndicator(barSeries, coreApplicationProperties.getTechnical()
+                        atrIndicator = new ATRIndicator(barSeries, moneyPlantApplicationProperties.getTechnical()
                                 .getAtr().getBarCount());
-                    }
-                    barSeries.addBar(
-                            ZonedDateTime.ofInstant(tick.getLastTradedTime().toInstant(), ZoneId.systemDefault())
-//                            ZonedDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault())
-                            , tick.getOpenPrice()
-                            , tick.getHighPrice()
-                            , tick.getLowPrice()
-                            , tick.getLastTradedPrice()
-                            , tick.getVolumeTradedToday());
 
-                    barSeries.addTrade(tick.getVolumeTradedToday(), tick.getLastTradedPrice());
-                    System.out.println(atrIndicator.getValue(barSeries.getEndIndex()));
+                        barSeries.addBar(
+                                ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+                                , tick.getOpenPrice()
+                                , tick.getHighPrice()
+                                , tick.getLowPrice()
+                                , tick.getLastTradedPrice()
+                                , tick.getVolumeTradedToday());
+
+                        try {
+                            candleStickCache.get(tick.getInstrumentToken());
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    tickList.add(tick.getLastTradedPrice());
+                    // candleStickCache.put(tick.getInstrumentToken(), Collections.singletonList(tick.getLastTradedPrice()));
+                    // System.out.println(atrIndicator.getValue(barSeries.getEndIndex()));
                 }
         );
     }

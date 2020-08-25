@@ -4,7 +4,6 @@ import com.zerodhatech.models.Instrument;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.moneyplant.core.constants.MoneyPlantConstants;
-import dev.codethat.moneyplant.core.scheduler.ReadCandleTask;
 import dev.codethat.moneyplant.core.service.*;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.moneyplant.core.util.FileUtil;

@@ -1,7 +1,7 @@
 package dev.codethat.orangeplant.scheduler;
 
 import com.zerodhatech.models.OHLC;
-import dev.codethat.moneyplant.core.scheduler.ReadCandleTask;
+import dev.codethat.moneyplant.core.task.ReadCandleTask;
 import dev.codethat.moneyplant.core.service.QuoteService;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.orangeplant.bean.request.QuoteRequestTO;

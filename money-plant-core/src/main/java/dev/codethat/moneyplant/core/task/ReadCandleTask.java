@@ -1,4 +1,4 @@
-package dev.codethat.moneyplant.core.scheduler;
+package dev.codethat.moneyplant.core.task;
 
 @FunctionalInterface
 public interface ReadCandleTask extends Runnable {

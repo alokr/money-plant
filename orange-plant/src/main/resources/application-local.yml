@@ -3,7 +3,7 @@ orange-plant:
     api:
       key:
       version: 3
-      secret:
+      secret: 
     query-params:
       api-key: api_key
       version: v
@@ -12,10 +12,11 @@ orange-plant:
     login-url: https://kite.trade/connect/login?v={v}&api_key={api_key}
   trade-preference:
     exchange: NFO
+    segment: equity
     segments:
       - EQ
       - NFO-FUT
       - NFO-OPT
     instrument: BANKNIFTY
-    expiry-start-date: 01-08-20
-    expiry-end-date: 27-08-20
+    expiry-start-date: 01-09-20
+    expiry-end-date: 27-09-20

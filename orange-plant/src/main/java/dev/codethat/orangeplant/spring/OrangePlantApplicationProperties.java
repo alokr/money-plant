@@ -38,6 +38,7 @@ public class OrangePlantApplicationProperties {
     @Data
     public static class TradePreference {
         private String exchange;
+        private String segment;
         private List<String> segments;
         private String instrument;
         private Date expiryStartDate;

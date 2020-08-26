@@ -1,8 +1,10 @@
 money-plant:
   market-data:
     ticker-streaming-enabled: true
-    ticker-reading-enabled: false
-    candle-period: 600
+    ticker-reading-enabled: true
+    bar-generation-enabled: true
+    candle-period: 1000
+    ticker-period: 10
   technical:
     bar-series:
       bar-count: 14

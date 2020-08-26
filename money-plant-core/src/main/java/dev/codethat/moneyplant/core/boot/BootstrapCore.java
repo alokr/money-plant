@@ -5,15 +5,17 @@ import java.io.BufferedReader;
 public interface BootstrapCore {
     boolean login(final BufferedReader reader) throws Exception;
 
-    boolean margin(String segment) throws Exception;
+    boolean margin() throws Exception;
 
-    boolean instruments(String exchange) throws Exception;
+    boolean instruments() throws Exception;
 
     boolean initStreaming();
 
     boolean streamTicker();
 
-    boolean scheduleTickerReading(String exchange, long candlePeriod);
+    boolean scheduleTickerReading();
+
+    boolean scheduleBarGenerator();
 
     boolean trade();
 }

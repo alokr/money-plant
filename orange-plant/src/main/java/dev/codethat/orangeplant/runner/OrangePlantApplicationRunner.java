@@ -36,9 +36,9 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
         try(final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))){
             if (bootstrap.login(bufferedReader)) {
                 log.info("Retrieving margin...");
-                if (bootstrap.margin(OrangePlantConstants.MARGIN_SEGMENT)) {
+                if (bootstrap.margin()) {
                     log.info("Retrieving instruments...");
-                    if (bootstrap.instruments(orangePlantApplicationProperties.getTradePreference().getExchange())) {
+                    if (bootstrap.instruments()) {
                         if (moneyPlantApplicationProperties.getMarketData().isTickerStreamingEnabled()) {
                             log.info("Initializing streaming...");
                             if (bootstrap.initStreaming()) {
@@ -50,9 +50,14 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
                         }
                         if (moneyPlantApplicationProperties.getMarketData().isTickerReadingEnabled()) {
                             log.info("Scheduling ticker reading...");
-                            if (bootstrap.scheduleTickerReading(
-                                    orangePlantApplicationProperties.getTradePreference().getExchange(),
-                                    moneyPlantApplicationProperties.getMarketData().getCandlePeriod())) {
+                            if (bootstrap.scheduleTickerReading()) {
+                            }
+                        }
+
+                        if (moneyPlantApplicationProperties.getMarketData().isBarGenerationEnabled()) {
+                            log.info("Scheduling bar generator...");
+                            if (bootstrap.scheduleBarGenerator()) {
+
                             }
                         }
                     }

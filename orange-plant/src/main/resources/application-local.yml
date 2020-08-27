@@ -1,5 +1,7 @@
 orange-plant:
   kite-connect:
+    account:
+      segment: equity
     api:
       key:
       version: 3
@@ -10,11 +12,13 @@ orange-plant:
     user-id: rb2977
     logging-enabled: true
     login-url: https://kite.trade/connect/login?v={v}&api_key={api_key}
+  market:
+    eq-exchange: NSE
+    fut-opt-exchange: NFO
   trade-preference:
     exchange: NFO
-    segment: equity
     segments:
-      - EQ
+      - NSE
       - NFO-FUT
       - NFO-OPT
     instrument: BANKNIFTY

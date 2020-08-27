@@ -40,13 +40,13 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final MoneyPlantCache moneyPlantCache;
 
-    private final SessionService sessionService;
+    private final SessionService<SessionRequestTO, ? extends SessionResponseTO> sessionService;
 
-    private final AccountService accountService;
+    private final AccountService<AccountRequestTO, ? extends AccountResponseTO> accountService;
 
-    private final QuoteService quoteService;
+    private final QuoteService<QuoteRequestTO, ? extends QuoteResponseTO> quoteService;
 
-    private final OrderService orderService;
+    private final OrderService<? extends dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO, ? extends dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO> orderService;
 
     private final StreamingService streamingService;
 
@@ -64,9 +64,9 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     public OrangePlantBootstrap(MoneyPlantApplicationProperties moneyPlantApplicationProperties
             , OrangePlantApplicationProperties orangePlantApplicationProperties
-            , MoneyPlantCache moneyPlantCache, SessionService sessionService
-            , AccountService accountService, QuoteService quoteService
-            , OrderService orderService, StreamingService streamingService
+            , MoneyPlantCache moneyPlantCache, SessionService<SessionRequestTO, ? extends SessionResponseTO> sessionService
+            , AccountService<AccountRequestTO, ? extends AccountResponseTO> accountService, QuoteService<QuoteRequestTO, ? extends QuoteResponseTO> quoteService
+            , OrderService<? extends dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO, ? extends dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO> orderService, StreamingService streamingService
             , FileUtil fileUtil, DataExtractor dataExtractor
             , @Qualifier(MoneyPlantConstants.BEAN_READ_CANDLE_TASK_SCHEDULER) TaskScheduler readCandleTaskScheduler
             , @Qualifier(MoneyPlantConstants.BEAN_BAR_GENERATOR_TASK_SCHEDULER) TaskScheduler barGeneratorTaskScheduler
@@ -100,7 +100,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
             SessionRequestTO sessionRequestTO = new SessionRequestTO();
             sessionRequestTO.setRequestToken(requestToken);
             log.info("Creating new session");
-            sessionResponseTO = (SessionResponseTO) sessionService.login(sessionRequestTO);
+            sessionResponseTO = sessionService.login(sessionRequestTO);
             if (!Objects.isNull(sessionResponseTO)) {
                 fileUtil.serializeSession(sessionResponseTO, OrangePlantConstants.SESSION_RESPONSE_TO_SER);
             } else {
@@ -119,9 +119,9 @@ public class OrangePlantBootstrap implements BootstrapCore {
     @Override
     public boolean margin() throws Exception {
         AccountRequestTO accountRequestTO = new AccountRequestTO();
-        accountRequestTO.setSegment(orangePlantApplicationProperties.getTradePreference().getSegment());
+        accountRequestTO.setSegment(orangePlantApplicationProperties.getKiteConnect().getAccount().getSegment());
 
-        AccountResponseTO accountResponseTO = (AccountResponseTO) accountService.margin(accountRequestTO);
+        AccountResponseTO accountResponseTO = accountService.margin(accountRequestTO);
         log.info("Net={}", accountResponseTO.getMargin().net);
         log.info("Cash={}", accountResponseTO.getMargin().available.cash);
         log.info("OptionPremium={}", accountResponseTO.getMargin().utilised.optionPremium);
@@ -133,7 +133,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
     public boolean instruments() throws Exception {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
         quoteRequestTO.setExchange(orangePlantApplicationProperties.getTradePreference().getExchange());
-        QuoteResponseTO quoteResponseTO = (QuoteResponseTO) quoteService.instruments(quoteRequestTO);
+        QuoteResponseTO quoteResponseTO = quoteService.instruments(quoteRequestTO);
         log.info("Retrieved instruments");
         dataExtractor.extractInstruments(quoteResponseTO.getInstruments());
         return true;
@@ -185,13 +185,25 @@ public class OrangePlantBootstrap implements BootstrapCore {
         return false;
     }
 
-    private List<String> getInstrumentTokens() {
-        return ((Map<String, Instrument>) moneyPlantCache.CACHE
-                .get(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS))
-                .values()
-                .stream()
-                .map(Instrument::getInstrument_token)
-                .map(String::valueOf)
-                .collect(Collectors.toList());
+    public <T> List<T> getInstrumentTokens() {
+        List<Long> list = null;
+        if (orangePlantApplicationProperties.getTradePreference().getExchange()
+                .equals(orangePlantApplicationProperties.getMarket().getEqExchange())) {
+            list = ((List<Instrument>) moneyPlantCache.CACHE.get(MoneyPlantCache.TRADING_STOCKS))
+                    .stream()
+                    .map(Instrument::getInstrument_token)
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+        }
+        if (orangePlantApplicationProperties.getTradePreference().getExchange()
+                .equals(orangePlantApplicationProperties.getMarket().getFutOptExchange())) {
+            list = ((Map<String, Instrument>) moneyPlantCache.CACHE.get(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS))
+                    .values()
+                    .stream()
+                    .map(Instrument::getInstrument_token)
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+        }
+        return (List<T>) list;
     }
 }

@@ -10,8 +10,15 @@ import java.util.List;
 @ConfigurationProperties("orange-plant")
 public class OrangePlantApplicationProperties {
     private String zoneOffset;
+    private Market market;
     private KiteConnect kiteConnect;
     private TradePreference tradePreference;
+
+    @Data
+    public static class Market {
+        private String eqExchange;
+        private String futOptExchange;
+    }
 
     @Data
     public static class KiteConnect {
@@ -20,6 +27,12 @@ public class OrangePlantApplicationProperties {
         private boolean loggingEnabled;
         private Api api;
         private QueryParams queryParams;
+        private Account account;
+
+        @Data
+        public static class Account {
+            private String segment;
+        }
 
         @Data
         public static class Api {
@@ -38,7 +51,6 @@ public class OrangePlantApplicationProperties {
     @Data
     public static class TradePreference {
         private String exchange;
-        private String segment;
         private List<String> segments;
         private String instrument;
         private Date expiryStartDate;

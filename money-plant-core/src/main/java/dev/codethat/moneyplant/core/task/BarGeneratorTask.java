@@ -4,6 +4,7 @@ import dev.codethat.moneyplant.core.bean.data.MoneyPlantBar;
 import dev.codethat.moneyplant.core.bean.data.MoneyPlantTick;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.indicators.ATRIndicator;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @Named
 @Data
+@Slf4j
 public class BarGeneratorTask implements Runnable {
     private final List<MoneyPlantTick> moneyPlantTickList = new ArrayList<>();
 
@@ -36,9 +38,13 @@ public class BarGeneratorTask implements Runnable {
     @Override
     public void run() {
         if (!moneyPlantTickList.isEmpty()) {
-            List<MoneyPlantTick> lastBarTicks;
+            List<MoneyPlantTick> lastBarTicks = null;
             synchronized (moneyPlantTickList) {
                 lastBarTicks = new ArrayList<>(moneyPlantTickList);
+                log.info("lastBarTicks={} mpTicks={}"
+                        , lastBarTicks.size()
+                        , moneyPlantTickList.size());
+                moneyPlantTickList.clear();
             }
             MoneyPlantBar moneyPlantBar = new MoneyPlantBar();
             moneyPlantBar.setOpenPrice(lastBarTicks.get(0).getLastTradedPrice());
@@ -72,7 +78,8 @@ public class BarGeneratorTask implements Runnable {
                         , moneyPlantBar.getClosePrice()
                         , moneyPlantBar.getVolume());
             }
-            System.out.println(atrIndicator.getValue(barSeries.getEndIndex()));
+            log.info("ATR={}"
+                    , atrIndicator.getValue(barSeries.getEndIndex()));
         }
     }
 }

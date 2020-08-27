@@ -1,6 +1,7 @@
 package dev.codethat.moneyplant.core.boot;
 
 import java.io.BufferedReader;
+import java.util.List;
 
 public interface BootstrapCore {
     boolean login(final BufferedReader reader) throws Exception;
@@ -16,6 +17,8 @@ public interface BootstrapCore {
     boolean scheduleTickerReading();
 
     boolean scheduleBarGenerator();
+
+    <T> List<T> getInstrumentTokens();
 
     boolean trade();
 }

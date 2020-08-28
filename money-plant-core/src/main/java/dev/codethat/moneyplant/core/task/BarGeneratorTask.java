@@ -16,7 +16,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Named
 @Data
@@ -29,6 +30,43 @@ public class BarGeneratorTask implements Runnable {
     @Inject
     public BarGeneratorTask(MoneyPlantApplicationProperties moneyPlantApplicationProperties) {
         this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
+
+        barSeries = new BaseBarSeries();
+        barSeries.setMaximumBarCount(moneyPlantApplicationProperties.getTechnical()
+                .getBarSeries().getBarCount());
+        atrIndicator = new ATRIndicator(barSeries, moneyPlantApplicationProperties.getTechnical()
+                .getAtr().getBarCount());
+
+        if (moneyPlantApplicationProperties.getMarketData().isRunTickSimulator()) {
+            CompletableFuture.runAsync(() -> {
+                double ltp = 24600;
+                double volume = 8473300;
+                while (true) {
+                    boolean run = true;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {
+                    }
+                    int sign = 2;
+                    while (run) {
+                        synchronized (moneyPlantTickList) {
+                            if (sign % 2 == 0) {
+                                ltp += ThreadLocalRandom.current().nextDouble(1, 25);
+                                sign += 1;
+                            } else {
+                                ltp -= ThreadLocalRandom.current().nextDouble(1, 25);
+                                sign -= 1;
+                            }
+                            volume += ThreadLocalRandom.current().nextDouble(100, 500);
+                            moneyPlantTickList
+                                    .add(new MoneyPlantTick(ltp, volume));
+                            log.debug("simulation: ltp={}, volume={}", ltp, volume);
+                            run = false;
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private BarSeries barSeries;
@@ -38,12 +76,10 @@ public class BarGeneratorTask implements Runnable {
     @Override
     public void run() {
         if (!moneyPlantTickList.isEmpty()) {
-            List<MoneyPlantTick> lastBarTicks = null;
+            List<MoneyPlantTick> lastBarTicks;
             synchronized (moneyPlantTickList) {
                 lastBarTicks = new ArrayList<>(moneyPlantTickList);
-                log.info("lastBarTicks={} mpTicks={}"
-                        , lastBarTicks.size()
-                        , moneyPlantTickList.size());
+                log.debug("lastBarTicks={} mpTicks={}", lastBarTicks.size(), moneyPlantTickList.size());
                 moneyPlantTickList.clear();
             }
             MoneyPlantBar moneyPlantBar = new MoneyPlantBar();
@@ -63,23 +99,19 @@ public class BarGeneratorTask implements Runnable {
                     .mapToDouble(MoneyPlantTick::getTradeVolume)
                     .average().getAsDouble());
 
-            if (Objects.isNull(barSeries)) {
-                barSeries = new BaseBarSeries();
-                barSeries.setMaximumBarCount(moneyPlantApplicationProperties.getTechnical()
-                        .getBarSeries().getBarCount());
-                atrIndicator = new ATRIndicator(barSeries, moneyPlantApplicationProperties.getTechnical()
-                        .getAtr().getBarCount());
-
             barSeries.addBar(
-                        ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
-                        , moneyPlantBar.getOpenPrice()
-                        , moneyPlantBar.getHighPrice()
-                        , moneyPlantBar.getLowPrice()
-                        , moneyPlantBar.getClosePrice()
-                        , moneyPlantBar.getVolume());
-            }
-            log.info("ATR={}"
-                    , atrIndicator.getValue(barSeries.getEndIndex()));
+                    ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+                    , moneyPlantBar.getOpenPrice()
+                    , moneyPlantBar.getHighPrice()
+                    , moneyPlantBar.getLowPrice()
+                    , moneyPlantBar.getClosePrice()
+                    , moneyPlantBar.getVolume());
+            lastBarTicks.clear();
+            log.info("bar: open={} low={} high={} close={} volume={}"
+                    , moneyPlantBar.getOpenPrice(), moneyPlantBar.getLowPrice()
+                    , moneyPlantBar.getHighPrice(), moneyPlantBar.getClosePrice(), moneyPlantBar.getVolume());
+            log.info("atr={} bars={}", atrIndicator.getValue(atrIndicator.getBarSeries().getEndIndex())
+                    , barSeries.getBarCount());
         }
     }
 }

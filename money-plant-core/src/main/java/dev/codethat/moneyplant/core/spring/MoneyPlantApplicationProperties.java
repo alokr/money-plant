@@ -16,6 +16,7 @@ public class MoneyPlantApplicationProperties {
         private boolean barGenerationEnabled;
         private long candlePeriod;
         private long tickerPeriod;
+        private boolean runTickSimulator;
     }
 
     @Data

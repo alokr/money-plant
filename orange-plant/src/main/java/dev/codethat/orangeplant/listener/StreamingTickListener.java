@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Named
 @Slf4j
@@ -26,6 +27,7 @@ public class StreamingTickListener implements StreamingTickCoreListener, OnTicks
         ticks.stream().forEach(
                 tick -> {
                     synchronized (barGeneratorTask.getMoneyPlantTickList()) {
+                        // log.info("tickCount={} ltp={} time={}", ticks.size(), tick.getLastTradedPrice(), new Date());
                         barGeneratorTask.getMoneyPlantTickList()
                                 .add(new MoneyPlantTick(tick.getLastTradedPrice(), tick.getVolumeTradedToday()));
                     }

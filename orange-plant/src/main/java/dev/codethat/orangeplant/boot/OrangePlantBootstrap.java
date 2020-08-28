@@ -192,7 +192,6 @@ public class OrangePlantBootstrap implements BootstrapCore {
             list = ((List<Instrument>) moneyPlantCache.CACHE.get(MoneyPlantCache.TRADING_STOCKS))
                     .stream()
                     .map(Instrument::getInstrument_token)
-                    .map(Long::valueOf)
                     .collect(Collectors.toList());
         }
         if (orangePlantApplicationProperties.getTradePreference().getExchange()
@@ -201,7 +200,6 @@ public class OrangePlantBootstrap implements BootstrapCore {
                     .values()
                     .stream()
                     .map(Instrument::getInstrument_token)
-                    .map(Long::valueOf)
                     .collect(Collectors.toList());
         }
         return (List<T>) list;

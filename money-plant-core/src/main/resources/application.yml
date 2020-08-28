@@ -3,8 +3,9 @@ money-plant:
     ticker-streaming-enabled: true
     ticker-reading-enabled: false
     bar-generation-enabled: true
-    candle-period: 1000
-    ticker-period: 10
+    candle-period: 300000
+    ticker-period: 60000
+    run-tick-simulator: true
   technical:
     bar-series:
       bar-count: 14

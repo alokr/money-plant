@@ -20,5 +20,7 @@ public interface BootstrapCore {
 
     <T> List<T> getInstrumentTokens();
 
+    boolean simulateMarketData();
+
     boolean trade();
 }

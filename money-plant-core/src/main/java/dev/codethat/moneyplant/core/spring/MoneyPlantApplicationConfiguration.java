@@ -17,19 +17,27 @@ public class MoneyPlantApplicationConfiguration {
         return new RestTemplate(new SimpleClientHttpRequestFactory());
     }
 
-    @Bean(MoneyPlantConstants.BEAN_READ_CANDLE_TASK_SCHEDULER)
-    public TaskScheduler readCandleTaskScheduler() {
+    @Bean(MoneyPlantConstants.BEAN_CANDLE_READING_TASK_SCHEDULER)
+    public TaskScheduler candleReadingTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(1);
-        scheduler.setThreadNamePrefix(MoneyPlantConstants.BEAN_READ_CANDLE_TASK_SCHEDULER);
+        scheduler.setThreadNamePrefix(MoneyPlantConstants.BEAN_CANDLE_READING_TASK_SCHEDULER);
         return scheduler;
     }
 
-    @Bean(MoneyPlantConstants.BEAN_BAR_GENERATOR_TASK_SCHEDULER)
-    public TaskScheduler barGeneratorTaskScheduler() {
+    @Bean(MoneyPlantConstants.BEAN_BAR_GENERATION_TASK_SCHEDULER)
+    public TaskScheduler barGenerationTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(1);
-        scheduler.setThreadNamePrefix(MoneyPlantConstants.BEAN_BAR_GENERATOR_TASK_SCHEDULER);
+        scheduler.setThreadNamePrefix(MoneyPlantConstants.BEAN_BAR_GENERATION_TASK_SCHEDULER);
+        return scheduler;
+    }
+
+    @Bean(MoneyPlantConstants.BEAN_MARKET_SIMULATION_TASK_SCHEDULER)
+    public TaskScheduler marketSimulationTaskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(1);
+        scheduler.setThreadNamePrefix(MoneyPlantConstants.BEAN_MARKET_SIMULATION_TASK_SCHEDULER);
         return scheduler;
     }
 }

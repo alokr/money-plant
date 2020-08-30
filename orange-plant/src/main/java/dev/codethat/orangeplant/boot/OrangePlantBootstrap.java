@@ -1,10 +1,13 @@
 package dev.codethat.orangeplant.boot;
 
 import com.zerodhatech.models.Instrument;
+import dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO;
+import dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
 import dev.codethat.moneyplant.core.cache.MoneyPlantCache;
 import dev.codethat.moneyplant.core.constants.MoneyPlantConstants;
 import dev.codethat.moneyplant.core.service.*;
+import dev.codethat.moneyplant.core.simulator.TickSimulatorTask;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.moneyplant.core.task.BarGeneratorTask;
 import dev.codethat.moneyplant.core.util.FileUtil;
@@ -58,20 +61,26 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final TaskScheduler barGeneratorTaskScheduler;
 
+    private final TaskScheduler marketSimulationTaskScheduler;
+
     private final OrangePlantReadCandleTask readCandleTask;
 
     private final BarGeneratorTask barGeneratorTask;
+
+    private final TickSimulatorTask tickSimulatorTask;
 
     public OrangePlantBootstrap(MoneyPlantApplicationProperties moneyPlantApplicationProperties
             , OrangePlantApplicationProperties orangePlantApplicationProperties
             , MoneyPlantCache moneyPlantCache, SessionService<SessionRequestTO, ? extends SessionResponseTO> sessionService
             , AccountService<AccountRequestTO, ? extends AccountResponseTO> accountService, QuoteService<QuoteRequestTO, ? extends QuoteResponseTO> quoteService
-            , OrderService<? extends dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO, ? extends dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO> orderService, StreamingService streamingService
+            , OrderService<? extends OrderRequestCoreTO, ? extends OrderResponseCoreTO> orderService, StreamingService streamingService
             , FileUtil fileUtil, DataExtractor dataExtractor
-            , @Qualifier(MoneyPlantConstants.BEAN_READ_CANDLE_TASK_SCHEDULER) TaskScheduler readCandleTaskScheduler
-            , @Qualifier(MoneyPlantConstants.BEAN_BAR_GENERATOR_TASK_SCHEDULER) TaskScheduler barGeneratorTaskScheduler
+            , @Qualifier(MoneyPlantConstants.BEAN_CANDLE_READING_TASK_SCHEDULER) TaskScheduler readCandleTaskScheduler
+            , @Qualifier(MoneyPlantConstants.BEAN_BAR_GENERATION_TASK_SCHEDULER) TaskScheduler barGeneratorTaskScheduler
+            , @Qualifier(MoneyPlantConstants.BEAN_MARKET_SIMULATION_TASK_SCHEDULER)  TaskScheduler marketSimulationTaskScheduler
             , OrangePlantReadCandleTask readCandleTask
-            , BarGeneratorTask barGeneratorTask) {
+            , BarGeneratorTask barGeneratorTask
+            , TickSimulatorTask tickSimulatorTask) {
         this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
         this.orangePlantApplicationProperties = orangePlantApplicationProperties;
         this.moneyPlantCache = moneyPlantCache;
@@ -84,8 +93,10 @@ public class OrangePlantBootstrap implements BootstrapCore {
         this.dataExtractor = dataExtractor;
         this.readCandleTaskScheduler = readCandleTaskScheduler;
         this.barGeneratorTaskScheduler = barGeneratorTaskScheduler;
+        this.marketSimulationTaskScheduler = marketSimulationTaskScheduler;
         this.readCandleTask = readCandleTask;
         this.barGeneratorTask = barGeneratorTask;
+        this.tickSimulatorTask = tickSimulatorTask;
     }
 
     @Override
@@ -177,7 +188,17 @@ public class OrangePlantBootstrap implements BootstrapCore {
                 , Instant.now()
                 , Duration.ofMillis(moneyPlantApplicationProperties.getMarketData().getCandlePeriod()));
         log.info("Bar generator scheduled");
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean simulateMarketData() {
+        barGeneratorTaskScheduler.scheduleWithFixedDelay(
+                barGeneratorTask
+                , Instant.now()
+                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketData().getCandlePeriod()));
+        log.info("Bar generator scheduled");
+        return true;
     }
 
     @Override

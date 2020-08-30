@@ -19,15 +19,12 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
 
     private final MoneyPlantApplicationProperties moneyPlantApplicationProperties;
 
-    private final OrangePlantApplicationProperties orangePlantApplicationProperties;
-
     @Inject
     public OrangePlantApplicationRunner(final OrangePlantBootstrap bootstrap
             , MoneyPlantApplicationProperties moneyPlantApplicationProperties
             , OrangePlantApplicationProperties orangePlantApplicationProperties) {
         this.bootstrap = bootstrap;
         this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
-        this.orangePlantApplicationProperties = orangePlantApplicationProperties;
     }
 
     @Override
@@ -53,10 +50,15 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
                             if (bootstrap.scheduleTickerReading()) {
                             }
                         }
-
                         if (moneyPlantApplicationProperties.getMarketData().isBarGenerationEnabled()) {
                             log.info("Scheduling bar generator...");
                             if (bootstrap.scheduleBarGenerator()) {
+
+                            }
+                        }
+                        if (moneyPlantApplicationProperties.getMarketSimulation().isEnabled()) {
+                            log.info("Scheduling market simulator...");
+                            if (bootstrap.simulateMarketData()) {
 
                             }
                         }

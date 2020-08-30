@@ -1,13 +1,21 @@
 money-plant:
   market-data:
-    ticker-streaming-enabled: true
     ticker-reading-enabled: false
+    ticker-streaming-enabled: true
+    ticker-period: 60000
     bar-generation-enabled: true
     candle-period: 300000
-    ticker-period: 60000
-    run-tick-simulator: true
+  market-simulation:
+    is-enabled: true
+    simulation-period: 5
+    last-traded-price: 25000
+    volume-traded: 0
+    ltp-start-range: 5
+    ltp-end-range: 50
   technical:
     bar-series:
-      bar-count: 14
+      bar-count: 7
     atr:
       bar-count: 14
+    super-trend:
+      multiplier: 3

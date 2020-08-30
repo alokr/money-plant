@@ -1,8 +1,13 @@
 package dev.codethat.moneyplant.core.analysis.technical;
 
+import dev.codethat.moneyplant.core.bean.data.MoneyPlantBar;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.indicators.ATRIndicator;
 
+import java.util.Optional;
+
+@Slf4j
 public class SuperTrendIndicator extends DoubleAbstractIndicator {
     private final double multiplier;
 
@@ -14,14 +19,18 @@ public class SuperTrendIndicator extends DoubleAbstractIndicator {
     }
 
     @Override
-    public Technical calculateTechnical() {
+    public Optional<MarketTechnical> calculateTechnical(final MoneyPlantBar currentBar) {
+        if (atrIndicator.getBarSeries().getBarCount() < atrIndicator.getBarSeries().getMaximumBarCount()) {
+            log.info("bars={}", atrIndicator.getBarSeries().getBarCount());
+            return Optional.empty();
+        }
         double avg = getAverage(currentBar.getHighPrice(), currentBar.getLowPrice());
         double mATR = multiplier * atrIndicator.getValue(atrIndicator.getBarSeries().getEndIndex()).doubleValue();
 
         Technical technical = new Technical();
         technical.upper = avg + mATR;
         technical.lower = avg - mATR;
-        return technical;
+        return Optional.of(technical);
     }
 
     @Data

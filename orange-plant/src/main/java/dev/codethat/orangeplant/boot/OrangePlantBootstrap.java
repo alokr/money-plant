@@ -193,10 +193,10 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     @Override
     public boolean simulateMarketData() {
-        barGeneratorTaskScheduler.scheduleWithFixedDelay(
-                barGeneratorTask
+        marketSimulationTaskScheduler.scheduleWithFixedDelay(
+                tickSimulatorTask
                 , Instant.now()
-                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketData().getCandlePeriod()));
+                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketSimulation().getSimulationPeriod()));
         log.info("Bar generator scheduled");
         return true;
     }

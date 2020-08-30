@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Optional;
 
 @Named
 @Data
@@ -38,9 +39,13 @@ public class BarGeneratorTask implements Runnable {
             MoneyPlantBar moneyPlantBar = marketData.computeBar();
             // add bar
             marketData.addBar(moneyPlantBar);
-            // calculate market technical
-            SuperTrendIndicator.Technical technical = marketTechnicals.getSuperTrendIndicator().calculateTechnical();
-            log.info("upper={} lower={}", technical.getUpper(), technical.getLower());
+            // calculate technical
+            Optional<MarketTechnical> technical = marketTechnicals.getSuperTrendIndicator()
+                    .calculateTechnical(moneyPlantBar);
+            if (technical.isPresent()) {
+                SuperTrendIndicator.Technical marketTechnical = (SuperTrendIndicator.Technical) technical.get();
+                log.info("upper={} lower={}", marketTechnical.getUpper(), marketTechnical.getLower());
+            }
         }
     }
 }

@@ -56,7 +56,7 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
 
                             }
                         }
-                        if (moneyPlantApplicationProperties.getMarketSimulation().isEnabled()) {
+                        if (moneyPlantApplicationProperties.getMarketSimulation().isSimulationEnabled()) {
                             log.info("Scheduling market simulator...");
                             if (bootstrap.simulateMarketData()) {
 

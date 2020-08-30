@@ -5,7 +5,7 @@ orange-plant:
     api:
       key:
       version: 3
-      secret:
+      secret: 
     query-params:
       api-key: api_key
       version: v

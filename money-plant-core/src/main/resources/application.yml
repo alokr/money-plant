@@ -1,12 +1,12 @@
 money-plant:
   market-data:
     ticker-reading-enabled: false
-    ticker-streaming-enabled: true
+    ticker-streaming-enabled: false
     ticker-period: 60000
     bar-generation-enabled: true
-    candle-period: 300000
+    candle-period: 5000
   market-simulation:
-    is-enabled: true
+    simulation-enabled: true
     simulation-period: 5
     last-traded-price: 25000
     volume-traded: 0

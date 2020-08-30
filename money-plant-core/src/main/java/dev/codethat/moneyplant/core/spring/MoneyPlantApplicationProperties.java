@@ -21,7 +21,7 @@ public class MoneyPlantApplicationProperties {
 
     @Data
     public static class MarketSimulation {
-        private boolean isEnabled;
+        private boolean simulationEnabled;
         private long simulationPeriod;
         private double lastTradedPrice;
         private long volumeTraded;

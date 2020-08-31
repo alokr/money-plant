@@ -4,10 +4,10 @@ money-plant:
     ticker-streaming-enabled: false
     ticker-period: 60000
     bar-generation-enabled: true
-    candle-period: 5000
+    candle-period: 60000
   market-simulation:
     simulation-enabled: true
-    simulation-period: 5
+    simulation-period: 15
     last-traded-price: 25000
     volume-traded: 0
     ltp-start-range: 5
@@ -16,6 +16,6 @@ money-plant:
     bar-series:
       bar-count: 7
     atr:
-      bar-count: 14
+      bar-count: 7
     super-trend:
       multiplier: 3

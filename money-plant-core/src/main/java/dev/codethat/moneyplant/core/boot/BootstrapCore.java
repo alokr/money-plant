@@ -1,5 +1,7 @@
 package dev.codethat.moneyplant.core.boot;
 
+import dev.codethat.moneyplant.core.analysis.technical.SuperTrendIndicator;
+
 import java.io.BufferedReader;
 import java.util.List;
 
@@ -22,5 +24,5 @@ public interface BootstrapCore {
 
     boolean simulateMarketData();
 
-    boolean trade();
+    boolean tryTrading(final SuperTrendIndicator.Technical technical) throws Exception;
 }

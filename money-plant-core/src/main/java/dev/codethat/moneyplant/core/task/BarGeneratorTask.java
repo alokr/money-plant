@@ -9,7 +9,6 @@ import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Optional;
 
@@ -23,7 +22,12 @@ public class BarGeneratorTask implements Runnable {
 
     private final MarketTechnicals marketTechnicals;
 
-    @Inject
+    public double boughtPrice;
+
+    public double soldPrice;
+
+//    private final BootstrapCore bootstrapCore;
+
     public BarGeneratorTask(MoneyPlantApplicationProperties moneyPlantApplicationProperties
             , MarketData marketData
             , MarketTechnicals marketTechnicals) {
@@ -44,7 +48,21 @@ public class BarGeneratorTask implements Runnable {
                     .calculateTechnical(moneyPlantBar);
             if (technical.isPresent()) {
                 SuperTrendIndicator.Technical marketTechnical = (SuperTrendIndicator.Technical) technical.get();
-                log.info("upper={} lower={}", marketTechnical.getUpper(), marketTechnical.getLower());
+                log.info("lower={} ltp={} upper={}"
+                        , marketTechnical.getLower(), moneyPlantBar.getLtp(), marketTechnical.getUpper());
+                try {
+//                    bootstrapCore.tryTrading((SuperTrendIndicator.Technical) technical.get());
+                    if (moneyPlantBar.getLtp() > marketTechnical.getUpper()) {
+                        log.info("buy at {}", moneyPlantBar.getLtp());
+                        boughtPrice = moneyPlantBar.getLtp();
+                    }
+                    if (moneyPlantBar.getLtp() < marketTechnical.getLower()) {
+                        log.info("sell at {}", moneyPlantBar.getLtp());
+                        soldPrice = moneyPlantBar.getLtp();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

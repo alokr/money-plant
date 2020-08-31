@@ -77,6 +77,8 @@ public class MarketData {
                 .mapToDouble(MoneyPlantTick::getTradeVolume)
                 .average()
                 .orElse(Double.NaN));
+        // ltp
+        moneyPlantBar.setLtp(lastBarTicks.get(lastBarTicks.size() - 1).getLastTradedPrice());
         // 3. clear ticks
         try {
             writeLock.lock();

@@ -13,4 +13,6 @@ public class MoneyPlantBar {
     private double lowPrice;
 
     private double volume;
+
+    private double ltp;
 }

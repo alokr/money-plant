@@ -1,6 +1,7 @@
 package dev.codethat.orangeplant.bean.response;
 
 import com.zerodhatech.models.Instrument;
+import com.zerodhatech.models.LTPQuote;
 import com.zerodhatech.models.OHLCQuote;
 import com.zerodhatech.models.Quote;
 import dev.codethat.moneyplant.core.bean.response.QuoteResponseCoreTO;
@@ -16,4 +17,6 @@ public class QuoteResponseTO extends QuoteResponseCoreTO {
     private Map<String, Quote> quoteMap;
 
     private Map<String, OHLCQuote> ohlcQuoteMapMap;
+
+    private Map<String, LTPQuote> ltpQuoteMap;
 }

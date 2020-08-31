@@ -46,7 +46,7 @@ public class MarketTechnicals {
                 , bar.getLowPrice()
                 , bar.getClosePrice()
                 , bar.getVolume());
-        log.info("bar=[open={} low={} high={} close={} volume={}]"
+        log.info("\nbar=[open={} low={} high={} close={} volume={}]"
                 , bar.getOpenPrice(), bar.getLowPrice(), bar.getHighPrice(), bar.getClosePrice(), bar.getVolume());
     }
 }

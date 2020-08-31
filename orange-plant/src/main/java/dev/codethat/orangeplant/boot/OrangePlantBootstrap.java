@@ -1,6 +1,8 @@
 package dev.codethat.orangeplant.boot;
 
 import com.zerodhatech.models.Instrument;
+import com.zerodhatech.models.LTPQuote;
+import dev.codethat.moneyplant.core.analysis.technical.SuperTrendIndicator;
 import dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO;
 import dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO;
 import dev.codethat.moneyplant.core.boot.BootstrapCore;
@@ -197,12 +199,25 @@ public class OrangePlantBootstrap implements BootstrapCore {
                 tickSimulatorTask
                 , Instant.now()
                 , Duration.ofMillis(moneyPlantApplicationProperties.getMarketSimulation().getSimulationPeriod()));
-        log.info("Bar generator scheduled");
+        log.info("Market simulator scheduled");
         return true;
     }
 
     @Override
-    public boolean trade() {
+    public boolean tryTrading(final SuperTrendIndicator.Technical technical) throws Exception {
+        QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
+        quoteRequestTO.setExchange(orangePlantApplicationProperties.getTradePreference().getExchange());
+        quoteRequestTO.setInstruments(getInstrumentTokens().toArray(new String[] {}));
+
+        QuoteResponseTO quoteResponseTO = quoteService.ltp(quoteRequestTO);
+        LTPQuote ltpQuote = quoteResponseTO.getLtpQuoteMap().get(quoteRequestTO.getInstruments() [0]);
+
+        if (ltpQuote.lastPrice > technical.getUpper()) {
+            log.info("buy at {}", ltpQuote.lastPrice);
+        }
+        if (ltpQuote.lastPrice < technical.getLower()) {
+            log.info("sell at {}", ltpQuote.lastPrice);
+        }
         return false;
     }
 

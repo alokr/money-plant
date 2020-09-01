@@ -3,9 +3,9 @@ orange-plant:
     account:
       segment: equity
     api:
-      key:
+      key: 
       version: 3
-      secret: 
+      secret:
     query-params:
       api-key: api_key
       version: v

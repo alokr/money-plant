@@ -1,16 +1,16 @@
 money-plant:
   market-data:
     ticker-reading-enabled: false
-    ticker-streaming-enabled: false
+    ticker-streaming-enabled: true
     ticker-period: 60000
     bar-generation-enabled: true
-    candle-period: 60000
+    candle-period: 300000
   market-simulation:
-    simulation-enabled: true
-    simulation-period: 15
+    simulation-enabled: false
+    simulation-period: 1000
     last-traded-price: 25000
     volume-traded: 0
-    ltp-start-range: 5
+    ltp-start-range: 15
     ltp-end-range: 50
   technical:
     bar-series:

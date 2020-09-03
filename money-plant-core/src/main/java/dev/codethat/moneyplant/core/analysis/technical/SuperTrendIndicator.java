@@ -21,7 +21,6 @@ public class SuperTrendIndicator extends DoubleAbstractIndicator {
     @Override
     public Optional<MarketTechnical> calculateTechnical(final MoneyPlantBar currentBar) {
         if (atrIndicator.getBarSeries().getBarCount() < atrIndicator.getBarSeries().getMaximumBarCount()) {
-            log.info("bars={}", atrIndicator.getBarSeries().getBarCount());
             return Optional.empty();
         }
         double avg = getAverage(currentBar.getHighPrice(), currentBar.getLowPrice());

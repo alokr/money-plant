@@ -16,22 +16,21 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TickSimulatorTask implements Runnable {
     private final MoneyPlantApplicationProperties moneyPlantApplicationProperties;
     private final MarketData marketData;
+    private double lastTradedPrice;
+    private double volume;
+
     @Inject
     public TickSimulatorTask(MoneyPlantApplicationProperties moneyPlantApplicationProperties, MarketData marketData) {
         this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
         this.marketData = marketData;
+        this.lastTradedPrice = moneyPlantApplicationProperties.getMarketSimulation().getLastTradedPrice();
+        this.volume = moneyPlantApplicationProperties.getMarketSimulation().getVolumeTraded();
     }
 
     @Override
     public void run() {
-        double lastTradedPrice = moneyPlantApplicationProperties.getMarketSimulation().getLastTradedPrice();
-        long volume = moneyPlantApplicationProperties.getMarketSimulation().getVolumeTraded();
-        if (new Random(new Date().getTime()).nextInt() % 2 == 0) {
-            lastTradedPrice += ThreadLocalRandom.current().nextDouble(5, 50);
-        } else {
-            lastTradedPrice -= ThreadLocalRandom.current().nextDouble(5, 50);
-        }
-        volume += ThreadLocalRandom.current().nextDouble(10, 1000);
+        lastTradedPrice = lastTradedPrice + 25;
+        volume = volume + 20;
         marketData.addTick(new MoneyPlantTick(lastTradedPrice, volume));
         log.debug("ltp={}, volume={}", lastTradedPrice, volume);
     }

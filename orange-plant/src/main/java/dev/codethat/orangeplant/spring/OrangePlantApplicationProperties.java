@@ -13,6 +13,15 @@ public class OrangePlantApplicationProperties {
     private Market market;
     private KiteConnect kiteConnect;
     private TradePreference tradePreference;
+    private Times times;
+
+    @Data
+    public static class Times {
+        private String marketOpenTime;
+        private String marketCloseTime;
+        private String tradeStartTime;
+        private String tradeEndTime;
+    }
 
     @Data
     public static class Market {

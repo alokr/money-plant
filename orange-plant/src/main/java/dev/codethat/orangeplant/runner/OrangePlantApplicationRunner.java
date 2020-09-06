@@ -3,8 +3,6 @@ package dev.codethat.orangeplant.runner;
 import dev.codethat.moneyplant.core.runner.MoneyPlantCoreApplicationRunner;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.orangeplant.boot.OrangePlantBootstrap;
-import dev.codethat.orangeplant.constants.OrangePlantConstants;
-import dev.codethat.orangeplant.spring.OrangePlantApplicationProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -21,8 +19,7 @@ public class OrangePlantApplicationRunner extends MoneyPlantCoreApplicationRunne
 
     @Inject
     public OrangePlantApplicationRunner(final OrangePlantBootstrap bootstrap
-            , MoneyPlantApplicationProperties moneyPlantApplicationProperties
-            , OrangePlantApplicationProperties orangePlantApplicationProperties) {
+            , MoneyPlantApplicationProperties moneyPlantApplicationProperties) {
         this.bootstrap = bootstrap;
         this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
     }

@@ -6,7 +6,7 @@ money-plant:
     bar-generation-enabled: true
     candle-period: 300000
   market-simulation:
-    simulation-enabled: false
+    simulation-enabled: true
     simulation-period: 1000
     last-traded-price: 25000
     volume-traded: 0

@@ -26,8 +26,6 @@ public class BarGeneratorTask implements Runnable {
 
     public double soldPrice;
 
-//    private final BootstrapCore bootstrapCore;
-
     public BarGeneratorTask(MoneyPlantApplicationProperties moneyPlantApplicationProperties
             , MarketData marketData
             , MarketTechnicals marketTechnicals) {
@@ -50,18 +48,13 @@ public class BarGeneratorTask implements Runnable {
                 SuperTrendIndicator.Technical marketTechnical = (SuperTrendIndicator.Technical) technical.get();
                 log.info("lower={} ltp={} upper={}"
                         , marketTechnical.getLower(), moneyPlantBar.getLtp(), marketTechnical.getUpper());
-                try {
-//                    bootstrapCore.tryTrading((SuperTrendIndicator.Technical) technical.get());
-                    if (moneyPlantBar.getLtp() > marketTechnical.getUpper()) {
-                        log.info("buy at {}", moneyPlantBar.getLtp());
-                        boughtPrice = moneyPlantBar.getLtp();
-                    }
-                    if (moneyPlantBar.getLtp() < marketTechnical.getLower()) {
-                        log.info("sell at {}", moneyPlantBar.getLtp());
-                        soldPrice = moneyPlantBar.getLtp();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (moneyPlantBar.getLtp() > marketTechnical.getUpper()) {
+                    log.info("buy at {}", moneyPlantBar.getLtp());
+                    boughtPrice = moneyPlantBar.getLtp();
+                }
+                if (moneyPlantBar.getLtp() < marketTechnical.getLower()) {
+                    log.info("sell at {}", moneyPlantBar.getLtp());
+                    soldPrice = moneyPlantBar.getLtp();
                 }
             }
         }

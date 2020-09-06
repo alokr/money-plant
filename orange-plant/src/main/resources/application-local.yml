@@ -1,11 +1,16 @@
 orange-plant:
+  times:
+    market-open-time: 01-25
+    market-close-time: 01-25
+    trade-start-time: 16-40
+    trade-end-time: 01-25
   kite-connect:
     account:
       segment: equity
     api:
-      key: yls7q6s0ddixuc99
+      key:
       version: 3
-      secret: fg72na1di168g8h1nmk0n1khb1cwqfty
+      secret: 
     query-params:
       api-key: api_key
       version: v

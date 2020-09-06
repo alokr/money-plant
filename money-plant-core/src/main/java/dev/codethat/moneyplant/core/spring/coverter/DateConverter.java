@@ -18,10 +18,8 @@ import java.util.Objects;
 public class DateConverter implements Converter<String, Date> {
     private static DateFormat sdf = new SimpleDateFormat("dd-MM-yy");
     @Override
-    public Date convert(String s) {
+    public Date convert(final String s) {
         Date date = null;
-        if (Objects.isNull(s))
-            return null;
         try {
             date = sdf.parse(s);
         } catch (ParseException e) {

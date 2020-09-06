@@ -32,6 +32,6 @@ public class TickSimulatorTask implements Runnable {
         lastTradedPrice = lastTradedPrice + 25;
         volume = volume + 20;
         marketData.addTick(new MoneyPlantTick(lastTradedPrice, volume));
-        log.debug("ltp={}, volume={}", lastTradedPrice, volume);
+        log.info("ltp={}, volume={}", lastTradedPrice, volume);
     }
 }

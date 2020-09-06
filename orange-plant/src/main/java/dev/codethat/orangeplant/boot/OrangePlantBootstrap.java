@@ -12,6 +12,7 @@ import dev.codethat.moneyplant.core.service.*;
 import dev.codethat.moneyplant.core.simulator.TickSimulatorTask;
 import dev.codethat.moneyplant.core.spring.MoneyPlantApplicationProperties;
 import dev.codethat.moneyplant.core.task.BarGeneratorTask;
+import dev.codethat.moneyplant.core.util.DateUtil;
 import dev.codethat.moneyplant.core.util.FileUtil;
 import dev.codethat.orangeplant.bean.request.AccountRequestTO;
 import dev.codethat.orangeplant.bean.request.QuoteRequestTO;
@@ -31,6 +32,7 @@ import javax.inject.Named;
 import java.io.BufferedReader;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,9 +41,9 @@ import java.util.stream.Collectors;
 @Named
 @Slf4j
 public class OrangePlantBootstrap implements BootstrapCore {
-    private final MoneyPlantApplicationProperties moneyPlantApplicationProperties;
+    private final MoneyPlantApplicationProperties mpApplicationProperties;
 
-    private final OrangePlantApplicationProperties orangePlantApplicationProperties;
+    private final OrangePlantApplicationProperties opApplicationProperties;
 
     private final MoneyPlantCache moneyPlantCache;
 
@@ -51,7 +53,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final QuoteService<QuoteRequestTO, ? extends QuoteResponseTO> quoteService;
 
-    private final OrderService<? extends dev.codethat.moneyplant.core.bean.request.OrderRequestCoreTO, ? extends dev.codethat.moneyplant.core.bean.response.OrderResponseCoreTO> orderService;
+    private final OrderService orderService;
 
     private final StreamingService streamingService;
 
@@ -71,20 +73,22 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     private final TickSimulatorTask tickSimulatorTask;
 
-    public OrangePlantBootstrap(MoneyPlantApplicationProperties moneyPlantApplicationProperties
-            , OrangePlantApplicationProperties orangePlantApplicationProperties
+    private final DateUtil dateUtil;
+
+    public OrangePlantBootstrap(MoneyPlantApplicationProperties mpApplicationProperties
+            , OrangePlantApplicationProperties opApplicationProperties
             , MoneyPlantCache moneyPlantCache, SessionService<SessionRequestTO, ? extends SessionResponseTO> sessionService
             , AccountService<AccountRequestTO, ? extends AccountResponseTO> accountService, QuoteService<QuoteRequestTO, ? extends QuoteResponseTO> quoteService
             , OrderService<? extends OrderRequestCoreTO, ? extends OrderResponseCoreTO> orderService, StreamingService streamingService
             , FileUtil fileUtil, DataExtractor dataExtractor
             , @Qualifier(MoneyPlantConstants.BEAN_CANDLE_READING_TASK_SCHEDULER) TaskScheduler readCandleTaskScheduler
             , @Qualifier(MoneyPlantConstants.BEAN_BAR_GENERATION_TASK_SCHEDULER) TaskScheduler barGeneratorTaskScheduler
-            , @Qualifier(MoneyPlantConstants.BEAN_MARKET_SIMULATION_TASK_SCHEDULER)  TaskScheduler marketSimulationTaskScheduler
+            , @Qualifier(MoneyPlantConstants.BEAN_MARKET_SIMULATION_TASK_SCHEDULER) TaskScheduler marketSimulationTaskScheduler
             , OrangePlantReadCandleTask readCandleTask
             , BarGeneratorTask barGeneratorTask
-            , TickSimulatorTask tickSimulatorTask) {
-        this.moneyPlantApplicationProperties = moneyPlantApplicationProperties;
-        this.orangePlantApplicationProperties = orangePlantApplicationProperties;
+            , TickSimulatorTask tickSimulatorTask, DateUtil dateUtil) {
+        this.mpApplicationProperties = mpApplicationProperties;
+        this.opApplicationProperties = opApplicationProperties;
         this.moneyPlantCache = moneyPlantCache;
         this.sessionService = sessionService;
         this.accountService = accountService;
@@ -99,6 +103,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
         this.readCandleTask = readCandleTask;
         this.barGeneratorTask = barGeneratorTask;
         this.tickSimulatorTask = tickSimulatorTask;
+        this.dateUtil = dateUtil;
     }
 
     @Override
@@ -132,7 +137,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
     @Override
     public boolean margin() throws Exception {
         AccountRequestTO accountRequestTO = new AccountRequestTO();
-        accountRequestTO.setSegment(orangePlantApplicationProperties.getKiteConnect().getAccount().getSegment());
+        accountRequestTO.setSegment(opApplicationProperties.getKiteConnect().getAccount().getSegment());
 
         AccountResponseTO accountResponseTO = accountService.margin(accountRequestTO);
         log.info("Net={}", accountResponseTO.getMargin().net);
@@ -145,7 +150,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
     @Override
     public boolean instruments() throws Exception {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
-        quoteRequestTO.setExchange(orangePlantApplicationProperties.getTradePreference().getExchange());
+        quoteRequestTO.setExchange(opApplicationProperties.getTradePreference().getExchange());
         QuoteResponseTO quoteResponseTO = quoteService.instruments(quoteRequestTO);
         log.info("Retrieved instruments");
         dataExtractor.extractInstruments(quoteResponseTO.getInstruments());
@@ -171,34 +176,36 @@ public class OrangePlantBootstrap implements BootstrapCore {
     @Override
     public boolean scheduleTickerReading() {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
-        quoteRequestTO.setExchange(orangePlantApplicationProperties.getTradePreference().getExchange());
+        quoteRequestTO.setExchange(opApplicationProperties.getTradePreference().getExchange());
         quoteRequestTO.setInstruments(getInstrumentTokens().toArray(new String[] {}));
         readCandleTask.setQuoteRequestTO(quoteRequestTO);
 
         readCandleTaskScheduler.scheduleWithFixedDelay(
                 readCandleTask
                 , Instant.now()
-                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketData().getTickerPeriod()));
+                , Duration.ofMillis(mpApplicationProperties.getMarketData().getTickerPeriod()));
         log.info("Ticker reading scheduled");
         return true;
     }
 
     @Override
     public boolean scheduleBarGenerator() {
-        barGeneratorTaskScheduler.scheduleWithFixedDelay(
+        barGeneratorTaskScheduler.scheduleAtFixedRate(
                 barGeneratorTask
                 , Instant.now()
-                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketData().getCandlePeriod()));
+                , Duration.ofMillis(mpApplicationProperties.getMarketData().getCandlePeriod()));
         log.info("Bar generator scheduled");
         return true;
     }
 
     @Override
     public boolean simulateMarketData() {
-        marketSimulationTaskScheduler.scheduleWithFixedDelay(
+        Instant nextRunInstant = dateUtil.getNextRun(
+                opApplicationProperties.getTimes().getTradeStartTime(), ZoneId.of("Asia/Kolkata"));
+        marketSimulationTaskScheduler.scheduleAtFixedRate(
                 tickSimulatorTask
-                , Instant.now()
-                , Duration.ofMillis(moneyPlantApplicationProperties.getMarketSimulation().getSimulationPeriod()));
+                , nextRunInstant
+                , Duration.ofMillis(mpApplicationProperties.getMarketSimulation().getSimulationPeriod()));
         log.info("Market simulator scheduled");
         return true;
     }
@@ -206,7 +213,7 @@ public class OrangePlantBootstrap implements BootstrapCore {
     @Override
     public boolean tryTrading(final SuperTrendIndicator.Technical technical) throws Exception {
         QuoteRequestTO quoteRequestTO = new QuoteRequestTO();
-        quoteRequestTO.setExchange(orangePlantApplicationProperties.getTradePreference().getExchange());
+        quoteRequestTO.setExchange(opApplicationProperties.getTradePreference().getExchange());
         quoteRequestTO.setInstruments(getInstrumentTokens().toArray(new String[] {}));
 
         QuoteResponseTO quoteResponseTO = quoteService.ltp(quoteRequestTO);
@@ -223,15 +230,15 @@ public class OrangePlantBootstrap implements BootstrapCore {
 
     public <T> List<T> getInstrumentTokens() {
         List<Long> list = null;
-        if (orangePlantApplicationProperties.getTradePreference().getExchange()
-                .equals(orangePlantApplicationProperties.getMarket().getEqExchange())) {
+        if (opApplicationProperties.getTradePreference().getExchange()
+                .equals(opApplicationProperties.getMarket().getEqExchange())) {
             list = ((List<Instrument>) moneyPlantCache.CACHE.get(MoneyPlantCache.TRADING_STOCKS))
                     .stream()
                     .map(Instrument::getInstrument_token)
                     .collect(Collectors.toList());
         }
-        if (orangePlantApplicationProperties.getTradePreference().getExchange()
-                .equals(orangePlantApplicationProperties.getMarket().getFutOptExchange())) {
+        if (opApplicationProperties.getTradePreference().getExchange()
+                .equals(opApplicationProperties.getMarket().getFutOptExchange())) {
             list = ((Map<String, Instrument>) moneyPlantCache.CACHE.get(MoneyPlantCache.TRADING_FUTURE_INSTRUMENTS))
                     .values()
                     .stream()
